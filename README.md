@@ -13,13 +13,12 @@ Postgres), **Tailwind CSS**, and deployed to **Vercel**. Runs on the free tier.
 | Route        | Who      | What                                                            |
 | ------------ | -------- | -------------------------------------------------------------- |
 | `/`          | Guests   | Upload photos/videos (multi-file, progress bars) + guestbook   |
-| `/gallery`   | 🔒 Admin | Grid of all media, lightbox, **Download all** (ZIP)            |
-| `/slideshow` | 🔒 Admin | Full-screen auto-advancing slideshow, refreshes every 20s     |
-| `/guestbook` | 🔒 Admin | All guest messages with names & timestamps                     |
-| `/login`     | Admin    | Password gate for the three admin pages                        |
+| `/gallery`   | Everyone | Grid of all media, lightbox, **Download all** (ZIP)            |
+| `/slideshow` | Everyone | Full-screen auto-advancing slideshow, refreshes every 20s     |
+| `/guestbook` | Everyone | All guest messages with names & timestamps                     |
 
-The guest upload page is public. The gallery, slideshow and guestbook are
-behind a password you set (`ADMIN_PASSWORD`).
+All pages are open to anyone with the link. Guests upload on `/`; the gallery,
+slideshow and guestbook are viewable by all (no password).
 
 ---
 
@@ -48,7 +47,6 @@ cp .env.local.example .env.local
 NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-public-key
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-ADMIN_PASSWORD=choose-a-strong-password
 # optional
 NEXT_PUBLIC_COUPLE_NAME=Sarah & Lairkin
 NEXT_PUBLIC_MAX_UPLOAD_MB=
@@ -58,8 +56,7 @@ NEXT_PUBLIC_MAX_UPLOAD_MB=
 | ------------------------------- | ------------------- | ---------------------------------------- |
 | `NEXT_PUBLIC_SUPABASE_URL`      | Yes                 | Guest uploads                            |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes                 | Guest uploads (insert-only via RLS)      |
-| `SUPABASE_SERVICE_ROLE_KEY`     | **No (server only)**| Admin pages list media/messages          |
-| `ADMIN_PASSWORD`                | **No (server only)**| Password gate for admin pages            |
+| `SUPABASE_SERVICE_ROLE_KEY`     | **No (server only)**| Gallery/slideshow list media/messages    |
 | `NEXT_PUBLIC_COUPLE_NAME`       | Yes                 | Heading text (optional)                  |
 | `NEXT_PUBLIC_MAX_UPLOAD_MB`     | Yes                 | Optional per-file size cap (optional)    |
 
@@ -73,14 +70,14 @@ npm run dev
 Open <http://localhost:3000>. To test from your **phone** on the same Wi-Fi,
 run `npm run dev -- -H 0.0.0.0` and visit `http://YOUR-COMPUTER-IP:3000`.
 
-Test checklist: upload a photo and a video, confirm they appear in `/gallery`
-(log in with `ADMIN_PASSWORD`), leave a guestbook message, open `/slideshow`.
+Test checklist: upload a photo and a video, confirm they appear in `/gallery`,
+leave a guestbook message, open `/slideshow`.
 
 ## 4. Deploy to Vercel
 
 1. Push this repo to GitHub.
 2. At [vercel.com](https://vercel.com) → **Add New → Project** → import the repo.
-3. Under **Environment Variables**, add the same six variables from your
+3. Under **Environment Variables**, add the same variables from your
    `.env.local` (Vercel does **not** read that file). Set them for Production
    (and Preview if you like).
 4. **Deploy.** You get a public URL like `your-wedding.vercel.app`.
@@ -102,9 +99,10 @@ can re-point it later without reprinting). Print it on your table sign.
   nothing else. They cannot read or delete other guests' data via the API.
 - **Media bytes** are served from the **public storage bucket** via public
   URLs (no key needed).
-- **Admin pages** are password-gated by `middleware.ts`. They list data through
-  server-side API routes that use the **service_role key**, which never reaches
-  the browser.
+- **The gallery, slideshow and guestbook are open to anyone with the link.**
+  They list data through server-side API routes that use the **service_role
+  key**, which never reaches the browser. (To make them private again, add an
+  auth gate — there's no password by default.)
 
 ## Free-tier notes
 
