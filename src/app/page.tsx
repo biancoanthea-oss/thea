@@ -1,5 +1,6 @@
 import GuestExperience from "@/components/GuestExperience";
 import { COUPLE_NAME } from "@/lib/config";
+import Link from "next/link";
 
 export default function HomePage() {
   return (
@@ -27,8 +28,28 @@ export default function HomePage() {
           <GuestExperience />
         </section>
 
-        <footer className="mt-10 text-center text-sm text-stone-400">
-          Made with love for {COUPLE_NAME}
+        <footer className="mt-10 text-center text-sm">
+          <nav className="mb-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+            <Link
+              href="/gallery"
+              className="text-sage-dark underline-offset-4 hover:underline"
+            >
+              View gallery
+            </Link>
+            <Link
+              href="/slideshow"
+              className="text-sage-dark underline-offset-4 hover:underline"
+            >
+              Slideshow
+            </Link>
+            <Link
+              href="/guestbook"
+              className="text-sage-dark underline-offset-4 hover:underline"
+            >
+              Guestbook
+            </Link>
+          </nav>
+          <p className="text-stone-400">Made with love for {COUPLE_NAME}</p>
         </footer>
       </div>
     </main>
