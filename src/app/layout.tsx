@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Great_Vibes, Cormorant_Garamond } from "next/font/google";
+import { Great_Vibes, Playfair_Display } from "next/font/google";
 import { COUPLE_NAME } from "@/lib/config";
 import "./globals.css";
 
@@ -10,8 +10,8 @@ const greatVibes = Great_Vibes({
   display: "swap",
 });
 
-const cormorant = Cormorant_Garamond({
-  weight: ["400", "500", "600"],
+const playfair = Playfair_Display({
+  weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
   variable: "--font-body",
   display: "swap",
@@ -34,7 +34,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${greatVibes.variable} ${cormorant.variable}`}>
+    <html lang="en" className={`${greatVibes.variable} ${playfair.variable}`}>
       <body className="font-body antialiased">{children}</body>
     </html>
   );
