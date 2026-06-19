@@ -28,28 +28,34 @@ export default function HomePage() {
           <GuestExperience />
         </section>
 
-        <footer className="mt-10 text-center text-sm">
-          <nav className="mb-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+        <section className="mt-8 text-center">
+          <p className="mb-4 text-lg text-sage-dark">
+            Already shared? Take a look 💕
+          </p>
+          <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
             <Link
               href="/gallery"
-              className="text-sage-dark underline-offset-4 hover:underline"
+              className="rounded-full bg-sage px-7 py-4 text-lg text-cream shadow-sm transition-colors hover:bg-sage-dark"
             >
-              View gallery
+              🖼️ View gallery
             </Link>
             <Link
               href="/slideshow"
-              className="text-sage-dark underline-offset-4 hover:underline"
+              className="rounded-full bg-blush px-7 py-4 text-lg text-cream shadow-sm transition-colors hover:bg-blush-dark"
             >
-              Slideshow
+              📽️ Slideshow
             </Link>
             <Link
               href="/guestbook"
-              className="text-sage-dark underline-offset-4 hover:underline"
+              className="rounded-full border-2 border-sage px-7 py-4 text-lg text-sage-dark transition-colors hover:bg-sage/10"
             >
-              Guestbook
+              💌 Guestbook
             </Link>
-          </nav>
-          <p className="text-stone-400">Made with love for {COUPLE_NAME}</p>
+          </div>
+        </section>
+
+        <footer className="mt-10 text-center text-sm text-stone-400">
+          Made with love for {COUPLE_NAME}
         </footer>
       </div>
     </main>
