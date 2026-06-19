@@ -14,6 +14,7 @@ export default function GalleryPage() {
   const [lightbox, setLightbox] = useState<number | null>(null);
   const [downloading, setDownloading] = useState(false);
   const [downloadMsg, setDownloadMsg] = useState("");
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -31,6 +32,43 @@ export default function GalleryPage() {
   useEffect(() => {
     load();
   }, [load]);
+
+  async function deleteItem(item: MediaItem) {
+    if (deletingId) return;
+    if (!window.confirm("Delete this photo? This can't be undone.")) return;
+    setDeletingId(item.id);
+    try {
+      const key =
+        typeof window !== "undefined"
+          ? window.localStorage.getItem("wedding_admin_key") ?? ""
+          : "";
+      let res = await fetch("/api/media", {
+        method: "DELETE",
+        headers: { "content-type": "application/json", "x-admin-key": key },
+        body: JSON.stringify({ id: item.id, file_url: item.file_url }),
+      });
+      // If protected, ask for the key once and retry.
+      if (res.status === 401) {
+        const entered = window.prompt("Enter the admin key to delete:") ?? "";
+        if (!entered) return;
+        window.localStorage.setItem("wedding_admin_key", entered);
+        res = await fetch("/api/media", {
+          method: "DELETE",
+          headers: {
+            "content-type": "application/json",
+            "x-admin-key": entered,
+          },
+          body: JSON.stringify({ id: item.id, file_url: item.file_url }),
+        });
+      }
+      if (!res.ok) throw new Error("Delete failed");
+      setMedia((prev) => prev.filter((m) => m.id !== item.id));
+    } catch (e) {
+      window.alert(e instanceof Error ? e.message : "Delete failed");
+    } finally {
+      setDeletingId(null);
+    }
+  }
 
   async function downloadAll() {
     if (media.length === 0 || downloading) return;
@@ -96,33 +134,47 @@ export default function GalleryPage() {
 
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
           {media.map((item, i) => (
-            <button
+            <div
               key={item.id}
-              onClick={() => setLightbox(i)}
               className="group relative aspect-square overflow-hidden rounded-lg bg-stone-200"
             >
-              {item.file_type === "video" ? (
-                <>
-                  <video
+              <button
+                onClick={() => setLightbox(i)}
+                className="block h-full w-full"
+                aria-label="Open photo"
+              >
+                {item.file_type === "video" ? (
+                  <>
+                    <video
+                      src={item.file_url}
+                      className="h-full w-full object-cover"
+                      muted
+                      preload="metadata"
+                    />
+                    <span className="absolute inset-0 flex items-center justify-center text-4xl text-white/90 drop-shadow">
+                      ▶
+                    </span>
+                  </>
+                ) : (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
                     src={item.file_url}
-                    className="h-full w-full object-cover"
-                    muted
-                    preload="metadata"
+                    alt={item.uploader_name || "Wedding photo"}
+                    loading="lazy"
+                    className="h-full w-full object-cover transition-transform group-hover:scale-105"
                   />
-                  <span className="absolute inset-0 flex items-center justify-center text-4xl text-white/90 drop-shadow">
-                    ▶
-                  </span>
-                </>
-              ) : (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={item.file_url}
-                  alt={item.uploader_name || "Wedding photo"}
-                  loading="lazy"
-                  className="h-full w-full object-cover transition-transform group-hover:scale-105"
-                />
-              )}
-            </button>
+                )}
+              </button>
+              <button
+                onClick={() => deleteItem(item)}
+                disabled={deletingId === item.id}
+                aria-label="Delete photo"
+                title="Delete photo"
+                className="absolute right-1.5 top-1.5 flex h-8 w-8 items-center justify-center rounded-full bg-black/55 text-white opacity-80 transition hover:bg-red-600 hover:opacity-100 disabled:opacity-40"
+              >
+                {deletingId === item.id ? "…" : "🗑"}
+              </button>
+            </div>
           ))}
         </div>
       </main>
