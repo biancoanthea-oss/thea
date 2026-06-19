@@ -10,7 +10,7 @@ export default function HomePage() {
           <p className="font-body text-sm uppercase tracking-[0.3em] text-blush">
             Welcome to the wedding of
           </p>
-          <h1 className="mt-2 font-script text-6xl leading-tight text-sage-dark sm:text-7xl">
+          <h1 className="mt-3 py-2 font-script text-6xl leading-[1.35] text-sage-dark sm:text-7xl">
             {COUPLE_NAME}
           </h1>
           <div className="mx-auto mt-4 flex items-center justify-center gap-3 text-sage/70">
@@ -20,7 +20,7 @@ export default function HomePage() {
           </div>
           <p className="mt-5 text-lg text-stone-600">
             Share the moments you capture today. Upload your photos and videos
-            below — no app, no login. Thank you for celebrating with us. ♥
+            below. Thank you for celebrating with us. ♥
           </p>
         </header>
 
