@@ -1,0 +1,58 @@
+/* ============================================================
+   STACKED IT — SITE-WIDE BRAND POLISH  (v1, safe / non-structural)
+   Paste this (including the <style> tags) into the global "Page header"
+   section, or into your platform's site-wide CSS field, so it applies
+   to EVERY page. It only changes look & feel (fonts, buttons, links,
+   form focus) — it does not move or restructure anything.
+   ============================================================ */
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
+
+:root{
+  --sit-orange:#EE7623;
+  --sit-orange-dk:#d4621a;
+  --sit-yellow:#F4AF23;
+  --sit-ink:#25282A;
+  --sit-line:#e3e8ec;
+}
+
+/* Crisper text everywhere */
+body{ -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; }
+
+/* Brand display font on all headings (uses Gotham Round if licensed) */
+h1,h2,h3,h4,.h1,.h2,.h3{
+  font-family:'Gotham Round','Gotham Rounded','Montserrat','Segoe UI',Arial,sans-serif;
+  letter-spacing:-.01em;
+}
+
+/* Links: smooth hover toward brand orange */
+a{ transition:color .15s ease, opacity .15s ease; }
+
+/* Buttons: rounder, bolder, subtle lift on hover (colours left as-is to stay safe) */
+.button, a.button, button.button, input.button, .btn, input[type="submit"]{
+  border-radius:10px !important;
+  font-weight:700 !important;
+  transition:transform .15s ease, box-shadow .15s ease, background-color .15s ease, filter .15s ease !important;
+}
+.button:hover, a.button:hover, button.button:hover, input.button:hover, .btn:hover, input[type="submit"]:hover{
+  transform:translateY(-1px);
+  filter:brightness(1.04);
+}
+
+/* Form fields: clearer brand focus state (helps the quote / contact forms convert) */
+input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):focus,
+select:focus, textarea:focus{
+  outline:2px solid var(--sit-orange) !important;
+  outline-offset:1px;
+}
+
+/* Product / content cards: gentle hover lift if the theme uses common card classes
+   (purely cosmetic; harmless if these classes don't exist) */
+.product:hover, .product-card:hover, .card:hover, .productbox:hover{
+  transform:translateY(-3px);
+  transition:transform .18s ease, box-shadow .18s ease;
+}
+
+/* Images never overflow their container */
+img{ max-width:100%; height:auto; }
+</style>
