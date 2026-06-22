@@ -175,6 +175,14 @@
   .submit{width:100%;background:linear-gradient(135deg,var(--orange),var(--orange-dk));color:#fff;border:none;cursor:pointer;padding:16px;border-radius:10px;font-weight:800;font-size:16px;margin-top:6px;transition:transform .18s ease,box-shadow .18s ease;box-shadow:0 12px 26px rgba(238,118,35,.32)}
   .submit:hover{transform:translateY(-2px);box-shadow:0 18px 36px rgba(238,118,35,.42)}
   .form-note{font-size:12px;color:var(--muted);text-align:center;margin-top:12px}
+  /* Real ShopIT mailform, styled to match */
+  .form-card mailform{display:block}
+  .form-card mailform label{display:block;margin-bottom:14px}
+  .form-card mailform .input-label{display:block;font-size:13px;font-weight:700;margin-bottom:6px;color:var(--ink)}
+  .form-card mailform input,.form-card mailform textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:15px;font-family:inherit;background:var(--mist)}
+  .form-card mailform input:focus,.form-card mailform textarea:focus{outline:2px solid var(--orange);background:#fff}
+  .form-card mailform .content-mail-form-button{width:100%;background:linear-gradient(135deg,var(--orange),var(--orange-dk));color:#fff;border:none;cursor:pointer;padding:16px;border-radius:10px;font-weight:800;font-size:16px;margin-top:6px;box-shadow:0 12px 26px rgba(238,118,35,.32);transition:transform .18s ease,box-shadow .18s ease}
+  .form-card mailform .content-mail-form-button:hover{transform:translateY(-2px);box-shadow:0 18px 36px rgba(238,118,35,.42)}
   @media(max-width:820px){.lead-grid{grid-template-columns:1fr}.row2{grid-template-columns:1fr}}
 
   /* ===== FOOTER ===== */
@@ -423,21 +431,14 @@
     <div class="form-card">
       <h3>Request your quote</h3>
       <p class="sm">A Stacked IT specialist will be in touch shortly.</p>
-      <div class="row2">
-        <div class="field"><label>First name</label><input type="text" placeholder="Jane"></div>
-        <div class="field"><label>Last name</label><input type="text" placeholder="Doe"></div>
-      </div>
-      <div class="field"><label>Work email</label><input type="email" placeholder="jane@company.ie"></div>
-      <div class="row2">
-        <div class="field"><label>Company</label><input type="text" placeholder="Company name"></div>
-        <div class="field"><label>Phone</label><input type="tel" placeholder="01 234 5678"></div>
-      </div>
-      <div class="field"><label>How many devices?</label>
-        <select><option>1–10</option><option>11–50</option><option>51–100</option><option>100+</option></select>
-      </div>
-      <div class="field"><label>What do you need? (optional)</label><textarea rows="3" placeholder="Laptops, desktops, trade-in, financing…"></textarea></div>
-      <a class="submit" href="mailto:hello@stacked.ie?subject=Lenovo%20Device%20Refresh%20Enquiry" style="display:block;text-align:center;text-decoration:none">Contact us</a>
-      <p class="form-note">By submitting you agree to be contacted by Stacked IT about this offer.</p>
+      <mailform class="content-mail-form" data-id="4">
+        <label><span class="input-label">Full Name</span> <input data-validation="{&quot;notEmpty&quot;:{}}" name="13" required="required" type="text" value=""></label>
+        <label><span class="input-label">Email</span> <input data-validation="{&quot;notEmpty&quot;:{}}" name="15" required="required" type="text" value=""></label>
+        <label><span class="input-label">Phone</span> <input data-validation="{&quot;notEmpty&quot;:{}}" name="200" required="required" type="text" value=""></label>
+        <label><span class="input-label">Details of Enquiry</span><input data-validation="{&quot;notEmpty&quot;:{}}" name="200" required="required" type="text" value=""></label>
+        <button class="button content-mail-form-button" type="button">Submit</button>
+      </mailform>
+      <p class="form-note">Prefer email? Write to <a href="mailto:hello@stacked.ie?subject=Lenovo%20Device%20Refresh%20Enquiry" style="color:var(--orange);font-weight:700">hello@stacked.ie</a>. By submitting you agree to be contacted by Stacked IT about this offer.</p>
     </div>
   </div>
 </section>
