@@ -229,6 +229,10 @@
 
   /* Remove any white gap above the hero and guard seams */
   .lenovo-lp{background:var(--ink)}
+  /* Pull the page up under the store menu to close the white gap.
+     If a small white strip remains, increase this number (e.g. -40px);
+     if the hero slips under the menu, reduce it (e.g. -16px). */
+  .lenovo-lp{margin-top:-32px}
   .lenovo-lp .hero{margin-top:0}
   .lenovo-lp > .hero:first-child,
   .lenovo-lp .hero:first-of-type{margin-top:0;padding-top:0}
@@ -346,8 +350,8 @@
 <!-- INTRO -->
 <section class="intro">
   <div class="wrap">
-    <h2>The right devices, backed by industry-leading support</h2>
-    <p>Whether you're replacing ageing equipment, expanding your workforce or standardising devices across your organisation, Lenovo offers powerful, secure solutions — supplied and supported by the Stacked IT team here in Ireland.</p>
+    <h2 style="text-align:center !important">The right devices, backed by industry-leading support</h2>
+    <p style="text-align:center !important">Whether you're replacing ageing equipment, expanding your workforce or standardising devices across your organisation, Lenovo offers powerful, secure solutions — supplied and supported by the Stacked IT team here in Ireland.</p>
   </div>
 </section>
 
