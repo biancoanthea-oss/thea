@@ -46,6 +46,21 @@ select:focus, textarea:focus{
   outline-offset:1px;
 }
 
+/* Remove the white "focus box" that appears when clicking links/logo/buttons
+   with a mouse — but KEEP it for keyboard users (Tab key) for accessibility. */
+a:focus:not(:focus-visible),
+button:focus:not(:focus-visible),
+.button:focus:not(:focus-visible),
+input[type="submit"]:focus:not(:focus-visible),
+input[type="button"]:focus:not(:focus-visible),
+[tabindex]:focus:not(:focus-visible),
+[onclick]:focus:not(:focus-visible),
+.logo:focus:not(:focus-visible),
+img:focus:not(:focus-visible){
+  outline:none !important;
+  box-shadow:none !important;
+}
+
 /* Product / content cards: gentle hover lift if the theme uses common card classes
    (purely cosmetic; harmless if these classes don't exist) */
 .product:hover, .product-card:hover, .card:hover, .productbox:hover{
