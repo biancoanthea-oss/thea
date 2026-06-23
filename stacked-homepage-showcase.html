@@ -1,0 +1,147 @@
+<!-- ============================================================
+     STACKED IT — BRANDED HOMEPAGE SHOWCASE
+     Paste into a "CMS content" Front page section (near the top,
+     e.g. just under the Main Slider). Uses the Lenovo-page palette.
+     All links go to working product searches; adjust if you have
+     dedicated category pages you'd rather use.
+     ============================================================ -->
+<style>
+  .sit-home{--orange:#EE7623;--orange-dk:#d4621a;--yellow:#F4AF23;--ink:#25282A;--ink-2:#1b1e20;
+    --mist:#f4f6f8;--line:#e3e8ec;--muted:#616365;
+    font-family:'Gotham Rounded','Montserrat','Segoe UI','Helvetica Neue',Arial,sans-serif;color:var(--ink)}
+  .sit-home *{box-sizing:border-box}
+  .sit-home .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+  .sit-home a{text-decoration:none}
+  .sit-home section{margin:0}
+
+  /* full-bleed bands */
+  .sit-home .band{width:100vw;position:relative;left:50%;right:50%;margin-left:-50vw;margin-right:-50vw}
+
+  /* ===== VALUE STRIP ===== */
+  .sit-home .value{background:linear-gradient(135deg,var(--orange),var(--orange-dk));color:#fff}
+  .sit-home .value-grid{display:grid;grid-template-columns:repeat(4,1fr)}
+  .sit-home .value-col{padding:26px 22px;text-align:center;border-right:1px solid rgba(255,255,255,.18)}
+  .sit-home .value-col:last-child{border-right:none}
+  .sit-home .value-col svg{width:30px;height:30px;stroke:#fff;fill:none;stroke-width:2;margin-bottom:8px}
+  .sit-home .value-col h4{font-size:15px;font-weight:800;letter-spacing:.02em;margin:0 0 4px}
+  .sit-home .value-col p{font-size:13px;color:#fff0e6;margin:0}
+  @media(max-width:760px){.sit-home .value-grid{grid-template-columns:1fr 1fr}.sit-home .value-col:nth-child(2){border-right:none}}
+
+  /* ===== SECTION HEADINGS ===== */
+  .sit-home .sec{padding:54px 0}
+  .sit-home .sec-head{text-align:center;margin-bottom:34px}
+  .sit-home .sec-head .kicker{display:inline-block;color:var(--orange);font-weight:800;font-size:12px;
+    letter-spacing:.14em;text-transform:uppercase;background:rgba(238,118,35,.1);padding:6px 14px;border-radius:20px}
+  .sit-home .sec-head h2{font-size:clamp(24px,3.2vw,34px);font-weight:800;margin:12px 0 0;letter-spacing:-.01em}
+
+  /* ===== CATEGORY GRID ===== */
+  .sit-home .cats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  .sit-home .cat{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+    background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px 16px;text-align:center;color:var(--ink);
+    transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+  .sit-home .cat:hover{transform:translateY(-5px);box-shadow:0 18px 38px rgba(31,38,43,.12);border-color:rgba(238,118,35,.45)}
+  .sit-home .cat .ic{width:58px;height:58px;display:flex;align-items:center;justify-content:center;border-radius:14px;
+    background:linear-gradient(160deg,#fff3ea,#ffe4d1)}
+  .sit-home .cat .ic svg{width:30px;height:30px;stroke:var(--orange);fill:none;stroke-width:1.9}
+  .sit-home .cat span{font-size:15px;font-weight:700}
+  @media(max-width:900px){.sit-home .cats{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:560px){.sit-home .cats{grid-template-columns:repeat(2,1fr)}}
+
+  /* ===== LENOVO FEATURE ===== */
+  .sit-home .feature{position:relative;overflow:hidden;border-radius:18px;color:#fff;
+    background:radial-gradient(900px 420px at 88% 12%, rgba(238,118,35,.28), transparent 60%),linear-gradient(150deg,#2c3033,#25282A 55%,var(--ink-2));
+    padding:40px 44px;display:flex;align-items:center;justify-content:space-between;gap:28px;flex-wrap:wrap;margin-top:6px}
+  .sit-home .feature::before{content:"";position:absolute;top:-70px;left:-70px;width:230px;height:230px;border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, var(--yellow), var(--orange) 60%, var(--orange-dk));opacity:.85;filter:blur(2px)}
+  .sit-home .feature .fc{position:relative;z-index:1;max-width:640px}
+  .sit-home .feature .eyebrow{display:inline-block;background:rgba(244,175,35,.16);color:var(--yellow);
+    border:1px solid rgba(244,175,35,.45);padding:5px 14px;border-radius:30px;font-size:12px;font-weight:800;
+    letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px}
+  .sit-home .feature h2{font-size:clamp(24px,3.2vw,36px);font-weight:800;letter-spacing:-.02em;margin:0 0 10px;color:#fff}
+  .sit-home .feature h2 .hl{color:var(--yellow)}
+  .sit-home .feature p{font-size:16px;color:#c7d0d6;margin:0 0 20px;max-width:540px}
+  .sit-home .feature .offer{position:relative;z-index:1;flex:none;text-align:center;border:1px solid rgba(255,255,255,.16);
+    border-radius:16px;padding:20px 28px;background:linear-gradient(145deg,rgba(255,255,255,.07),rgba(0,0,0,.18))}
+  .sit-home .feature .offer .up{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#e7edf1}
+  .sit-home .feature .offer .num{font-size:60px;font-weight:800;line-height:.9;
+    background:linear-gradient(180deg,var(--yellow),var(--orange));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .sit-home .feature .offer .num sup{font-size:22px;-webkit-text-fill-color:var(--orange)}
+  .sit-home .feature .offer .off{font-size:14px;font-weight:800;letter-spacing:.06em}
+
+  /* ===== BUTTONS ===== */
+  .sit-home .btn{display:inline-flex;align-items:center;gap:9px;font-weight:700;font-size:16px;padding:14px 28px;border-radius:10px;transition:transform .18s ease,box-shadow .18s ease}
+  .sit-home .btn-pri{background:linear-gradient(135deg,var(--orange),var(--orange-dk));color:#fff;box-shadow:0 12px 26px rgba(238,118,35,.32)}
+  .sit-home .btn-pri:hover{transform:translateY(-2px);box-shadow:0 18px 36px rgba(238,118,35,.42)}
+  .sit-home .btn-ghost{border:1px solid rgba(255,255,255,.4);color:#fff}
+  .sit-home .btn-ghost:hover{background:rgba(255,255,255,.1)}
+  .sit-home .btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.4}
+
+  /* ===== QUOTE CTA ===== */
+  .sit-home .quote{background:var(--mist);text-align:center;padding:56px 0}
+  .sit-home .quote h2{font-size:clamp(24px,3.2vw,34px);font-weight:800;margin:0 0 10px}
+  .sit-home .quote p{font-size:17px;color:var(--muted);max-width:560px;margin:0 auto 22px}
+  .sit-home .quote .btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .sit-home .quote .btn-dark{background:var(--ink);color:#fff}
+  .sit-home .quote .btn-dark:hover{transform:translateY(-2px)}
+</style>
+
+<div class="sit-home">
+
+  <!-- VALUE STRIP -->
+  <section class="band value">
+    <div class="wrap value-grid">
+      <div class="value-col"><svg viewBox="0 0 24 24"><path d="M3 9l9-6 9 6v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 21V12h6v9"/></svg><h4>Since 2007</h4><p>Trusted Irish IT supplier</p></div>
+      <div class="value-col"><svg viewBox="0 0 24 24"><path d="M4 9a8 8 0 0 1 13-4l3 3M20 15a8 8 0 0 1-13 4l-3-3"/><path d="M20 5v3h-3M4 19v-3h3"/></svg><h4>Trade-in options</h4><p>Value for your old devices</p></div>
+      <div class="value-col"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg><h4>Flexible financing</h4><p>Plans to protect cash flow</p></div>
+      <div class="value-col"><svg viewBox="0 0 24 24"><path d="M5 13a7 7 0 0 1 14 0"/><rect x="3" y="13" width="4" height="6" rx="2"/><rect x="17" y="13" width="4" height="6" rx="2"/></svg><h4>Expert support</h4><p>Advice & after-sales care</p></div>
+    </div>
+  </section>
+
+  <!-- SHOP BY CATEGORY -->
+  <section class="sec wrap">
+    <div class="sec-head">
+      <span class="kicker">Everything we supply</span>
+      <h2>Shop by category</h2>
+    </div>
+    <div class="cats">
+      <a class="cat" href="https://shopit.stacked.ie/product_list?query=laptop"><span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="12" rx="1.5"/><path d="M2 20h20"/></svg></span><span>Laptops</span></a>
+      <a class="cat" href="https://shopit.stacked.ie/product_list?query=desktop"><span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M8 20h8M12 16v4"/></svg></span><span>Desktops</span></a>
+      <a class="cat" href="https://shopit.stacked.ie/product_list?query=monitor"><span class="ic"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="13" rx="1.5"/><path d="M9 21h6M12 17v4"/></svg></span><span>Monitors</span></a>
+      <a class="cat" href="https://shopit.stacked.ie/product_list?query=server"><span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="7" rx="1.5"/><rect x="3" y="13" width="18" height="7" rx="1.5"/><path d="M7 7.5h.01M7 16.5h.01"/></svg></span><span>Servers</span></a>
+      <a class="cat" href="https://shopit.stacked.ie/product_list?query=storage"><span class="ic"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg></span><span>Storage</span></a>
+      <a class="cat" href="https://shopit.stacked.ie/product_list?query=network"><span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="14" width="18" height="6" rx="1.5"/><path d="M7 14v-3h10v3M12 11V7"/><circle cx="12" cy="5" r="2"/></svg></span><span>Networking</span></a>
+      <a class="cat" href="https://shopit.stacked.ie/product_list?query=phone"><span class="ic"><svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg></span><span>Phones</span></a>
+      <a class="cat" href="https://shopit.stacked.ie/product_list?query=accessories"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 7h11l5 5-5 5H4z"/><path d="M8 12h.01"/></svg></span><span>Accessories</span></a>
+      <a class="cat" href="https://shopit.stacked.ie/product_list?query=software"><span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M7 6.5h.01M10 6.5h.01"/></svg></span><span>Software</span></a>
+      <a class="cat" href="https://shopit.stacked.ie/product_list?query=peripherals"><span class="ic"><svg viewBox="0 0 24 24"><path d="M12 3a5 9 0 0 0 0 18 5 9 0 0 0 0-18z"/><path d="M12 3v8"/></svg></span><span>Peripherals</span></a>
+      <a class="cat" href="https://shopit.stacked.ie/product_list?query=docking"><span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="8" rx="2"/><path d="M7 12h2M12 12h5"/></svg></span><span>Docking & Cables</span></a>
+      <a class="cat" href="https://shopit.stacked.ie/product_list"><span class="ic"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span><span>View all</span></a>
+    </div>
+  </section>
+
+  <!-- LENOVO FEATURE -->
+  <section class="sec wrap" style="padding-top:0">
+    <div class="feature">
+      <div class="fc">
+        <span class="eyebrow">Lenovo Device Refresh</span>
+        <h2>Refresh your business technology with <span class="hl">Lenovo</span></h2>
+        <p>Replace ageing equipment, expand your workforce or standardise devices across your organisation — with trade-in, flexible financing and full Stacked IT support.</p>
+        <a class="btn btn-pri" href="https://shopit.stacked.ie/cms/lenovo-device-refresh">View the offers <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+      <div class="offer"><div class="up">Up to</div><div class="num">15<sup>%</sup></div><div class="off">OFF</div></div>
+    </div>
+  </section>
+
+  <!-- QUOTE CTA -->
+  <section class="band quote">
+    <div class="wrap">
+      <h2>Buying for your business or team?</h2>
+      <p>Tell us what you need and our team will put together the right spec, pricing, trade-in and financing — fast.</p>
+      <div class="btns">
+        <a class="btn btn-pri" href="https://shopit.stacked.ie/cms/lenovo-device-refresh#contact">Request a quote <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="btn btn-dark" href="https://shopit.stacked.ie/cms/contact">Contact us</a>
+      </div>
+    </div>
+  </section>
+
+</div>
