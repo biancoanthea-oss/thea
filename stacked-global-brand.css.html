@@ -46,19 +46,22 @@ select:focus, textarea:focus{
   outline-offset:1px;
 }
 
-/* Remove the white "focus box" that appears when clicking links/logo/buttons
-   with a mouse — but KEEP it for keyboard users (Tab key) for accessibility. */
-a:focus:not(:focus-visible),
-button:focus:not(:focus-visible),
-.button:focus:not(:focus-visible),
-input[type="submit"]:focus:not(:focus-visible),
-input[type="button"]:focus:not(:focus-visible),
-[tabindex]:focus:not(:focus-visible),
-[onclick]:focus:not(:focus-visible),
-.logo:focus:not(:focus-visible),
-img:focus:not(:focus-visible){
+/* Remove the white "focus box" that appears when clicking menu items, links,
+   the logo or buttons. Kills it for mouse clicks; re-adds a clean outline for
+   keyboard users (Tab key) so the site stays accessible. */
+a:focus, a:active,
+nav a:focus, .menu a:focus, li a:focus,
+button:focus, .button:focus, .btn:focus,
+input[type="submit"]:focus, input[type="button"]:focus,
+[tabindex]:focus, [onclick]:focus, .logo:focus, img:focus{
   outline:none !important;
   box-shadow:none !important;
+}
+/* Keyboard-only focus ring (Tab navigation) */
+a:focus-visible, button:focus-visible, .button:focus-visible,
+.btn:focus-visible, [tabindex]:focus-visible{
+  outline:2px solid var(--sit-orange) !important;
+  outline-offset:2px;
 }
 
 /* Product / content cards: gentle hover lift if the theme uses common card classes
