@@ -1,31 +1,31 @@
 import type { Metadata, Viewport } from "next";
-import { Great_Vibes, Playfair_Display } from "next/font/google";
-import { COUPLE_NAME } from "@/lib/config";
+import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
-const greatVibes = Great_Vibes({
-  weight: "400",
+const fraunces = Fraunces({
+  weight: ["500", "600", "700"],
   subsets: ["latin"],
-  variable: "--font-script",
+  variable: "--font-display",
   display: "swap",
 });
 
-const playfair = Playfair_Display({
-  weight: ["400", "500", "600", "700"],
+const jakarta = Plus_Jakarta_Sans({
+  weight: ["400", "500", "600"],
   subsets: ["latin"],
   variable: "--font-body",
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: `${COUPLE_NAME}'s Wedding`,
-  description: `Share your photos & videos from ${COUPLE_NAME}'s wedding`,
+  title: "Pantry Snap — Recipe to Shopping List",
+  description:
+    "Turn a recipe video or screenshot into a ready-to-shop ingredient list.",
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#6f7a4f",
+  themeColor: "#3f6b4d",
 };
 
 export default function RootLayout({
@@ -34,7 +34,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${greatVibes.variable} ${playfair.variable}`}>
+    <html lang="en" className={`${fraunces.variable} ${jakarta.variable}`}>
       <body className="font-body antialiased">{children}</body>
     </html>
   );
