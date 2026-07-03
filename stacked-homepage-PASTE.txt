@@ -28,7 +28,7 @@
   .sit-home .sec-head a.more svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.4}
 
   /* ===== VALUE STRIP ===== */
-  .sit-home .value{background:#EE7623;color:#fff}
+  .sit-home .value{background:#EE7623;color:#fff;padding-top:28px}
   .sit-home .value-grid{display:grid;grid-template-columns:repeat(4,1fr)}
   .sit-home .value-col{padding:22px;text-align:center;border-right:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;gap:12px}
   .sit-home .value-col:last-child{border-right:none}
