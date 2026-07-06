@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>Driftfield — generative flow-field art studio</title>
+<meta name="description" content="A tiny generative art studio. Tweak the flow, density and palette, then download or share reproducible abstract art. Runs entirely in your browser." />
+<meta name="color-scheme" content="dark" />
+<style>
+  :root {
+    --bg: #0c0d12;
+    --panel: rgba(20, 22, 30, 0.72);
+    --panel-solid: #14161e;
+    --line: rgba(255, 255, 255, 0.10);
+    --ink: #f2f3f7;
+    --ink-dim: #9aa0b0;
+    --accent: #7ca8ff;
+    --radius: 14px;
+    --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: radial-gradient(1200px 800px at 70% -10%, #1a1d2b 0%, var(--bg) 55%);
+    color: var(--ink);
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Stage */
+  #stage {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+  }
+  #art {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    background: #000;
+    touch-action: none;
+  }
+
+  /* Panel */
+  .panel {
+    position: fixed;
+    top: 18px;
+    left: 18px;
+    width: 300px;
+    max-width: calc(100vw - 36px);
+    max-height: calc(100vh - 36px);
+    overflow: auto;
+    padding: 18px 18px 16px;
+    background: var(--panel);
+    backdrop-filter: blur(18px) saturate(1.3);
+    -webkit-backdrop-filter: blur(18px) saturate(1.3);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    z-index: 5;
+  }
+  .brand {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin: 0 0 2px;
+  }
+  .brand h1 {
+    font-size: 19px;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+  .brand .dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent);
+    align-self: center;
+  }
+  .tag { color: var(--ink-dim); font-size: 12.5px; margin: 0 0 16px; line-height: 1.45; }
+
+  .field { margin-bottom: 14px; }
+  .field > label {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 12px; color: var(--ink-dim);
+    margin-bottom: 6px; letter-spacing: 0.02em; text-transform: uppercase;
+  }
+  .field .val { color: var(--ink); font-variant-numeric: tabular-nums; text-transform: none; letter-spacing: 0; }
+
+  input[type="range"] {
+    -webkit-appearance: none; appearance: none;
+    width: 100%; height: 4px; border-radius: 4px;
+    background: rgba(255,255,255,0.14);
+    outline: none; cursor: pointer;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--ink); border: 3px solid var(--accent);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.5); cursor: pointer;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--ink); border: 3px solid var(--accent);
+    cursor: pointer;
+  }
+
+  .palettes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .swatch {
+    display: flex; height: 30px; border-radius: 8px; overflow: hidden;
+    border: 1.5px solid transparent; cursor: pointer; padding: 0;
+    transition: transform 0.08s ease, border-color 0.12s ease;
+  }
+  .swatch:hover { transform: translateY(-1px); }
+  .swatch span { flex: 1; }
+  .swatch[aria-pressed="true"] { border-color: var(--ink); }
+
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px; }
+  button.btn {
+    appearance: none; border: 1px solid var(--line);
+    background: rgba(255,255,255,0.05); color: var(--ink);
+    padding: 10px 12px; border-radius: 10px; font-size: 13px; font-weight: 550;
+    cursor: pointer; transition: background 0.12s ease, transform 0.06s ease;
+    display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  }
+  button.btn:hover { background: rgba(255,255,255,0.11); }
+  button.btn:active { transform: translateY(1px); }
+  button.btn.primary { background: var(--accent); color: #0a1020; border-color: transparent; }
+  button.btn.primary:hover { filter: brightness(1.06); }
+  .row.full { grid-template-columns: 1fr; margin-top: 8px; }
+
+  .hint { color: var(--ink-dim); font-size: 11px; margin: 12px 0 0; line-height: 1.5; }
+  .hint kbd {
+    background: rgba(255,255,255,0.09); border: 1px solid var(--line);
+    border-radius: 5px; padding: 1px 6px; font-size: 10.5px; font-family: inherit;
+  }
+
+  .toast {
+    position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--panel-solid); color: var(--ink);
+    border: 1px solid var(--line); border-radius: 10px;
+    padding: 10px 16px; font-size: 13px; box-shadow: var(--shadow);
+    opacity: 0; pointer-events: none; transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 20;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* Collapse toggle for small screens */
+  .collapse {
+    position: fixed; top: 18px; right: 18px; z-index: 6;
+    display: none;
+  }
+  @media (max-width: 720px) {
+    .panel { width: calc(100vw - 36px); }
+  }
+</style>
+</head>
+<body>
+  <div id="stage"><canvas id="art" width="1600" height="1600"></canvas></div>
+
+  <div class="panel" id="panel">
+    <div class="brand"><span class="dot"></span><h1>Driftfield</h1></div>
+    <p class="tag">Generative flow-field art. Tweak it, then download or share a link that recreates the exact piece.</p>
+
+    <div class="field">
+      <label>Palette</label>
+      <div class="palettes" id="palettes"></div>
+    </div>
+
+    <div class="field">
+      <label>Flow scale <span class="val" id="scaleVal"></span></label>
+      <input type="range" id="scale" min="1" max="100" step="1" />
+    </div>
+    <div class="field">
+      <label>Turbulence <span class="val" id="turbVal"></span></label>
+      <input type="range" id="turb" min="0" max="100" step="1" />
+    </div>
+    <div class="field">
+      <label>Density <span class="val" id="densVal"></span></label>
+      <input type="range" id="dens" min="10" max="100" step="1" />
+    </div>
+    <div class="field">
+      <label>Stroke <span class="val" id="strokeVal"></span></label>
+      <input type="range" id="stroke" min="1" max="100" step="1" />
+    </div>
+
+    <div class="row">
+      <button class="btn" id="regen" title="New seed (Space)">↻ Regenerate</button>
+      <button class="btn" id="random" title="Randomize everything (R)">✦ Surprise me</button>
+    </div>
+    <div class="row">
+      <button class="btn" id="share" title="Copy a link that recreates this">🔗 Copy link</button>
+      <button class="btn primary" id="save" title="Download PNG (S)">↓ Save PNG</button>
+    </div>
+
+    <p class="hint">
+      Seed <span class="val" id="seedVal"></span> · every piece is reproducible.<br>
+      <kbd>Space</kbd> regenerate · <kbd>R</kbd> surprise · <kbd>S</kbd> save
+    </p>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+(() => {
+  "use strict";
+
+  // ---------- Seeded PRNG (mulberry32) ----------
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  // ---------- Perlin noise (2D), permutation seeded per-render ----------
+  function makeNoise(rand) {
+    const perm = new Uint8Array(512);
+    const p = new Uint8Array(256);
+    for (let i = 0; i < 256; i++) p[i] = i;
+    for (let i = 255; i > 0; i--) {
+      const j = Math.floor(rand() * (i + 1));
+      const tmp = p[i]; p[i] = p[j]; p[j] = tmp;
+    }
+    for (let i = 0; i < 512; i++) perm[i] = p[i & 255];
+    const fade = (t) => t * t * t * (t * (t * 6 - 15) + 10);
+    const lerp = (a, b, t) => a + t * (b - a);
+    const grad = (h, x, y) => {
+      switch (h & 3) {
+        case 0: return  x + y;
+        case 1: return -x + y;
+        case 2: return  x - y;
+        default: return -x - y;
+      }
+    };
+    return function noise2(x, y) {
+      const X = Math.floor(x) & 255, Y = Math.floor(y) & 255;
+      x -= Math.floor(x); y -= Math.floor(y);
+      const u = fade(x), v = fade(y);
+      const aa = perm[perm[X] + Y], ab = perm[perm[X] + Y + 1];
+      const ba = perm[perm[X + 1] + Y], bb = perm[perm[X + 1] + Y + 1];
+      const n = lerp(
+        lerp(grad(aa, x, y),     grad(ba, x - 1, y),     u),
+        lerp(grad(ab, x, y - 1), grad(bb, x - 1, y - 1), u),
+        v
+      );
+      return n; // roughly [-1, 1]
+    };
+  }
+
+  // ---------- Palettes ----------
+  const PALETTES = [
+    { name: "Ember",    bg: "#120a08", colors: ["#ffb26b", "#ff6b6b", "#c9184a", "#7c2d12", "#ffd6a5"] },
+    { name: "Tide",     bg: "#05080f", colors: ["#a8dadc", "#457b9d", "#1d3557", "#48cae4", "#e0fbfc"] },
+    { name: "Bloom",    bg: "#0e0714", colors: ["#f72585", "#b5179e", "#7209b7", "#4361ee", "#4cc9f0"] },
+    { name: "Moss",     bg: "#07100b", colors: ["#d8f3dc", "#95d5b2", "#52b788", "#2d6a4f", "#b7e4c7"] },
+    { name: "Dusk",     bg: "#0b0710", colors: ["#ffd60a", "#ff9e00", "#ff5400", "#9d4edd", "#5a189a"] },
+    { name: "Graphite", bg: "#0a0a0b", colors: ["#f8f9fa", "#ced4da", "#868e96", "#495057", "#adb5bd"] },
+  ];
+
+  // ---------- State ----------
+  const DEFAULT = { palette: 1, scale: 34, turb: 42, dens: 55, stroke: 26, seed: 1 };
+  const state = { ...DEFAULT };
+
+  const canvas = document.getElementById("art");
+  const ctx = canvas.getContext("2d");
+  const SIZE = 1600;
+  canvas.width = SIZE; canvas.height = SIZE;
+
+  const els = {
+    palettes: document.getElementById("palettes"),
+    scale: document.getElementById("scale"), scaleVal: document.getElementById("scaleVal"),
+    turb: document.getElementById("turb"), turbVal: document.getElementById("turbVal"),
+    dens: document.getElementById("dens"), densVal: document.getElementById("densVal"),
+    stroke: document.getElementById("stroke"), strokeVal: document.getElementById("strokeVal"),
+    seedVal: document.getElementById("seedVal"),
+    toast: document.getElementById("toast"),
+  };
+
+  // ---------- Palette swatches ----------
+  PALETTES.forEach((pal, i) => {
+    const b = document.createElement("button");
+    b.className = "swatch";
+    b.title = pal.name;
+    b.setAttribute("aria-pressed", "false");
+    pal.colors.forEach((c) => {
+      const s = document.createElement("span");
+      s.style.background = c;
+      b.appendChild(s);
+    });
+    b.addEventListener("click", () => { state.palette = i; syncUI(); render(); pushURL(); });
+    els.palettes.appendChild(b);
+  });
+
+  function syncUI() {
+    els.scale.value = state.scale;   els.scaleVal.textContent = state.scale;
+    els.turb.value = state.turb;     els.turbVal.textContent = state.turb;
+    els.dens.value = state.dens;     els.densVal.textContent = state.dens;
+    els.stroke.value = state.stroke; els.strokeVal.textContent = state.stroke;
+    els.seedVal.textContent = "#" + state.seed;
+    [...els.palettes.children].forEach((c, i) =>
+      c.setAttribute("aria-pressed", i === state.palette ? "true" : "false"));
+  }
+
+  // ---------- Render ----------
+  let renderToken = 0;
+  function render() {
+    const token = ++renderToken;
+    const pal = PALETTES[state.palette] || PALETTES[0];
+    const rand = mulberry32((state.seed * 2654435761) >>> 0);
+    const noise = makeNoise(rand);
+
+    // background
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = "source-over";
+    ctx.fillStyle = pal.bg;
+    ctx.fillRect(0, 0, SIZE, SIZE);
+    ctx.globalCompositeOperation = "lighter";
+
+    // map controls -> parameters
+    const flowScale = 0.0008 + (state.scale / 100) * 0.006; // noise frequency
+    const turbulence = 0.5 + (state.turb / 100) * 3.5;      // angle multiplier
+    const particles = Math.round(300 + (state.dens / 100) * 2400);
+    const lineWidth = 0.4 + (state.stroke / 100) * 3.4;
+    const steps = 220;
+    const stepLen = 3.2;
+
+    // seed particles
+    const agents = [];
+    for (let i = 0; i < particles; i++) {
+      agents.push({
+        x: rand() * SIZE,
+        y: rand() * SIZE,
+        color: pal.colors[(rand() * pal.colors.length) | 0],
+        life: steps * (0.5 + rand() * 0.5),
+      });
+    }
+
+    ctx.lineWidth = lineWidth;
+    ctx.lineCap = "round";
+
+    // Draw incrementally so the piece "grows" without freezing the tab.
+    let step = 0;
+    const BATCH = 6;
+    function chunk() {
+      if (token !== renderToken) return; // superseded by a newer render
+      for (let b = 0; b < BATCH && step < steps; b++, step++) {
+        ctx.globalAlpha = 0.06 + (lineWidth < 1 ? 0.05 : 0.02);
+        for (const a of agents) {
+          if (step > a.life) continue;
+          const angle = noise(a.x * flowScale, a.y * flowScale) * Math.PI * turbulence;
+          const nx = a.x + Math.cos(angle) * stepLen;
+          const ny = a.y + Math.sin(angle) * stepLen;
+          ctx.strokeStyle = a.color;
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(nx, ny);
+          ctx.stroke();
+          a.x = nx; a.y = ny;
+          // wrap softly to keep coverage
+          if (a.x < -20) a.x = SIZE + 20; else if (a.x > SIZE + 20) a.x = -20;
+          if (a.y < -20) a.y = SIZE + 20; else if (a.y > SIZE + 20) a.y = -20;
+        }
+      }
+      if (step < steps) requestAnimationFrame(chunk);
+    }
+    chunk();
+  }
+
+  // ---------- URL state (shareable, reproducible) ----------
+  function pushURL() {
+    const q = new URLSearchParams({
+      p: state.palette, s: state.scale, t: state.turb,
+      d: state.dens, w: state.stroke, seed: state.seed,
+    });
+    history.replaceState(null, "", "#" + q.toString());
+  }
+  function readURL() {
+    if (!location.hash || location.hash.length < 2) return false;
+    const q = new URLSearchParams(location.hash.slice(1));
+    const num = (k, def, lo, hi) => {
+      const v = parseInt(q.get(k), 10);
+      return Number.isFinite(v) ? Math.min(hi, Math.max(lo, v)) : def;
+    };
+    if (![...q.keys()].length) return false;
+    state.palette = num("p", DEFAULT.palette, 0, PALETTES.length - 1);
+    state.scale = num("s", DEFAULT.scale, 1, 100);
+    state.turb = num("t", DEFAULT.turb, 0, 100);
+    state.dens = num("d", DEFAULT.dens, 10, 100);
+    state.stroke = num("w", DEFAULT.stroke, 1, 100);
+    state.seed = num("seed", DEFAULT.seed, 1, 999999);
+    return true;
+  }
+
+  // ---------- Toast ----------
+  let toastTimer;
+  function toast(msg) {
+    els.toast.textContent = msg;
+    els.toast.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => els.toast.classList.remove("show"), 1800);
+  }
+
+  // ---------- Actions ----------
+  function newSeed() { state.seed = 1 + Math.floor(Math.random() * 999999); syncUI(); render(); pushURL(); }
+  function surprise() {
+    state.palette = Math.floor(Math.random() * PALETTES.length);
+    state.scale = 8 + Math.floor(Math.random() * 80);
+    state.turb = Math.floor(Math.random() * 100);
+    state.dens = 30 + Math.floor(Math.random() * 70);
+    state.stroke = 5 + Math.floor(Math.random() * 70);
+    state.seed = 1 + Math.floor(Math.random() * 999999);
+    syncUI(); render(); pushURL();
+  }
+  function savePNG() {
+    const a = document.createElement("a");
+    a.download = `driftfield-${PALETTES[state.palette].name.toLowerCase()}-${state.seed}.png`;
+    a.href = canvas.toDataURL("image/png");
+    a.click();
+    toast("Saved PNG");
+  }
+  async function copyLink() {
+    pushURL();
+    const url = location.href;
+    try {
+      await navigator.clipboard.writeText(url);
+      toast("Link copied — it recreates this piece");
+    } catch {
+      toast("Copy failed — link is in the address bar");
+    }
+  }
+
+  // ---------- Wire controls ----------
+  function bindSlider(el, valEl, key) {
+    el.addEventListener("input", () => {
+      state[key] = parseInt(el.value, 10);
+      valEl.textContent = state[key];
+    });
+    // only re-render on release for heavy params (smoother dragging)
+    el.addEventListener("change", () => { render(); pushURL(); });
+  }
+  bindSlider(els.scale, els.scaleVal, "scale");
+  bindSlider(els.turb, els.turbVal, "turb");
+  bindSlider(els.dens, els.densVal, "dens");
+  bindSlider(els.stroke, els.strokeVal, "stroke");
+
+  document.getElementById("regen").addEventListener("click", newSeed);
+  document.getElementById("random").addEventListener("click", surprise);
+  document.getElementById("save").addEventListener("click", savePNG);
+  document.getElementById("share").addEventListener("click", copyLink);
+
+  window.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT") return;
+    if (e.code === "Space") { e.preventDefault(); newSeed(); }
+    else if (e.key === "r" || e.key === "R") surprise();
+    else if (e.key === "s" || e.key === "S") savePNG();
+  });
+
+  // ---------- Boot ----------
+  readURL();
+  syncUI();
+  render();
+  pushURL();
+})();
+</script>
+</body>
+</html>
