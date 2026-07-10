@@ -22,10 +22,25 @@ create table if not exists public.messages (
   created_at  timestamptz not null default now()
 );
 
+-- Collaborative wedding shopping list. Unlike uploads/messages, this is a
+-- shared checklist the couple (and their helpers) edit together, so anon is
+-- allowed to read, add, tick off and remove items (see policies below).
+create table if not exists public.shopping_items (
+  id           uuid primary key default gen_random_uuid(),
+  item         text not null,
+  quantity     text,
+  note         text,
+  added_by     text,
+  is_purchased boolean not null default false,
+  created_at   timestamptz not null default now()
+);
+
 create index if not exists uploads_created_at_idx
   on public.uploads (created_at desc);
 create index if not exists messages_created_at_idx
   on public.messages (created_at desc);
+create index if not exists shopping_items_created_at_idx
+  on public.shopping_items (created_at desc);
 
 -- ---------------------------------------------------------------------------
 -- Row Level Security
@@ -35,6 +50,7 @@ create index if not exists messages_created_at_idx
 -- ---------------------------------------------------------------------------
 alter table public.uploads  enable row level security;
 alter table public.messages enable row level security;
+alter table public.shopping_items enable row level security;
 
 -- uploads: insert-only for anonymous (and logged-in) guests
 drop policy if exists "guests can insert uploads" on public.uploads;
@@ -52,8 +68,42 @@ create policy "guests can insert messages"
   to anon, authenticated
   with check (true);
 
--- No SELECT / UPDATE / DELETE policies are defined for anon, so those
--- operations are denied by default. (service_role bypasses RLS entirely.)
+-- No SELECT / UPDATE / DELETE policies are defined for anon on uploads or
+-- messages, so those operations are denied by default. (service_role bypasses
+-- RLS entirely.)
+
+-- shopping_items: a collaborative checklist. Everyone with the link can read,
+-- add, tick off (update) and remove (delete) items. This is intentionally more
+-- permissive than uploads/messages — it's a shared to-buy list, not private
+-- guest data.
+drop policy if exists "anyone can read shopping items" on public.shopping_items;
+create policy "anyone can read shopping items"
+  on public.shopping_items
+  for select
+  to anon, authenticated
+  using (true);
+
+drop policy if exists "anyone can add shopping items" on public.shopping_items;
+create policy "anyone can add shopping items"
+  on public.shopping_items
+  for insert
+  to anon, authenticated
+  with check (true);
+
+drop policy if exists "anyone can update shopping items" on public.shopping_items;
+create policy "anyone can update shopping items"
+  on public.shopping_items
+  for update
+  to anon, authenticated
+  using (true)
+  with check (true);
+
+drop policy if exists "anyone can delete shopping items" on public.shopping_items;
+create policy "anyone can delete shopping items"
+  on public.shopping_items
+  for delete
+  to anon, authenticated
+  using (true);
 
 -- ---------------------------------------------------------------------------
 -- Storage policies for the "uploads" bucket

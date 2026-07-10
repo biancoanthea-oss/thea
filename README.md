@@ -16,9 +16,12 @@ Postgres), **Tailwind CSS**, and deployed to **Vercel**. Runs on the free tier.
 | `/gallery`   | Everyone | Grid of all media, lightbox, **Download all** (ZIP)            |
 | `/slideshow` | Everyone | Full-screen auto-advancing slideshow, refreshes every 20s     |
 | `/guestbook` | Everyone | All guest messages with names & timestamps                     |
+| `/shopping`  | Everyone | Collaborative wedding shopping list (add, tick off, remove)    |
 
 All pages are open to anyone with the link. Guests upload on `/`; the gallery,
-slideshow and guestbook are viewable by all (no password).
+slideshow and guestbook are viewable by all (no password). The `/shopping`
+list is a shared checklist — anyone with the link can add items, tick them off
+and remove them.
 
 ---
 

@@ -7,6 +7,7 @@ const LINKS = [
   { href: "/gallery", label: "Gallery" },
   { href: "/slideshow", label: "Slideshow" },
   { href: "/guestbook", label: "Guestbook" },
+  { href: "/shopping", label: "Shopping" },
 ];
 
 export default function AdminNav({ active }: { active: string }) {
