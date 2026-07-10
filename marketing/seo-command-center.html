@@ -1,0 +1,1011 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Stacked — SEO &amp; Inbound Command Center</title>
+<style>
+  /* ---------- Design tokens ---------------------------------------------- */
+  /* Palette: warm-paper ground + graphite ink, biased toward a signal-amber
+     accent that reads "stacked / energy". Deep teal as the calm secondary.
+     Semantic colours are kept separate from the accent hue. */
+  :root {
+    color-scheme: light dark;
+    --bg:        #f4f2ec;
+    --surface:   #ffffff;
+    --surface-2: #faf8f3;
+    --border:    #e4dfd3;
+    --border-2:  #d6d0c1;
+    --ink:       #22242b;
+    --ink-soft:  #4a4d57;
+    --muted:     #7c7d84;
+    --accent:    #d9772e;   /* signal amber */
+    --accent-2:  #b85f1c;
+    --accent-ink:#ffffff;
+    --teal:      #0f6b6f;
+    --good:      #2f9e5f;
+    --good-bg:   #e6f4ec;
+    --warn:      #c98a12;
+    --warn-bg:   #f8efd8;
+    --crit:      #cf4436;
+    --crit-bg:   #fbe7e4;
+    --ring-track:#e8e3d7;
+    --shadow:    0 1px 2px rgba(30,25,15,.05), 0 6px 20px rgba(30,25,15,.06);
+    --radius:    14px;
+    --radius-sm: 9px;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:        #16171b;
+      --surface:   #1e2026;
+      --surface-2: #24262d;
+      --border:    #2f323b;
+      --border-2:  #3a3e48;
+      --ink:       #edece8;
+      --ink-soft:  #c3c2be;
+      --muted:     #8c8d94;
+      --accent:    #e8894a;
+      --accent-2:  #f0a066;
+      --accent-ink:#1a1206;
+      --teal:      #4fb8bc;
+      --good:      #52c07e;
+      --good-bg:   #16301f;
+      --warn:      #e0b34b;
+      --warn-bg:   #332913;
+      --crit:      #e8695c;
+      --crit-bg:   #3a1c18;
+      --ring-track:#2f323b;
+      --shadow:    0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="light"] {
+    color-scheme: light;
+    --bg:#f4f2ec; --surface:#fff; --surface-2:#faf8f3; --border:#e4dfd3; --border-2:#d6d0c1;
+    --ink:#22242b; --ink-soft:#4a4d57; --muted:#7c7d84; --accent:#d9772e; --accent-2:#b85f1c;
+    --accent-ink:#fff; --teal:#0f6b6f; --good:#2f9e5f; --good-bg:#e6f4ec; --warn:#c98a12;
+    --warn-bg:#f8efd8; --crit:#cf4436; --crit-bg:#fbe7e4; --ring-track:#e8e3d7;
+    --shadow:0 1px 2px rgba(30,25,15,.05),0 6px 20px rgba(30,25,15,.06);
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg:#16171b; --surface:#1e2026; --surface-2:#24262d; --border:#2f323b; --border-2:#3a3e48;
+    --ink:#edece8; --ink-soft:#c3c2be; --muted:#8c8d94; --accent:#e8894a; --accent-2:#f0a066;
+    --accent-ink:#1a1206; --teal:#4fb8bc; --good:#52c07e; --good-bg:#16301f; --warn:#e0b34b;
+    --warn-bg:#332913; --crit:#e8695c; --crit-bg:#3a1c18; --ring-track:#2f323b;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
+  }
+
+  /* ---------- Base ------------------------------------------------------- */
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: var(--sans); line-height: 1.5;
+    font-size: 15px; -webkit-font-smoothing: antialiased;
+  }
+  h1,h2,h3,h4 { text-wrap: balance; margin: 0; font-weight: 650; letter-spacing: -.01em; }
+  a { color: var(--accent-2); }
+  button { font-family: inherit; }
+  ::selection { background: var(--accent); color: var(--accent-ink); }
+  .eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: .09em; color: var(--muted); font-weight: 650; }
+  .tnum { font-variant-numeric: tabular-nums; }
+
+  /* ---------- Header ----------------------------------------------------- */
+  header.top {
+    position: sticky; top: 0; z-index: 40;
+    background: color-mix(in srgb, var(--bg) 86%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+  }
+  .top-inner {
+    max-width: 1120px; margin: 0 auto; padding: 14px 20px;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: center; gap: 11px; }
+  .logo {
+    width: 34px; height: 34px; border-radius: 9px; flex: none;
+    background: linear-gradient(150deg, var(--accent), var(--accent-2));
+    display: grid; place-items: center; box-shadow: var(--shadow);
+  }
+  .logo span { display:block; width:5px; border-radius:1.5px; background: var(--accent-ink); }
+  .logo .s1{height:8px} .logo .s2{height:12px} .logo .s3{height:16px}
+  .logo-bars{display:flex; align-items:flex-end; gap:2px;}
+  .brand h1 { font-size: 16px; line-height: 1.1; }
+  .brand p { margin: 2px 0 0; font-size: 12px; color: var(--muted); }
+  .top-spacer { flex: 1; }
+  .top-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+  .btn {
+    appearance: none; cursor: pointer; border: 1px solid var(--border-2);
+    background: var(--surface); color: var(--ink); font-size: 13px; font-weight: 550;
+    padding: 7px 13px; border-radius: 8px; transition: .15s; white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn:hover { border-color: var(--accent); color: var(--accent-2); }
+  .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .btn.primary:hover { background: var(--accent-2); border-color: var(--accent-2); color: var(--accent-ink); }
+  .btn.ghost { background: transparent; border-color: transparent; color: var(--muted); }
+  .btn.ghost:hover { color: var(--accent-2); background: var(--surface-2); }
+  .btn:focus-visible, .tab:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 2px;
+  }
+  .btn.tiny { padding: 4px 8px; font-size: 12px; }
+
+  /* ---------- Tabs ------------------------------------------------------- */
+  nav.tabs { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+  .tabs-row {
+    display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none;
+    border-bottom: 1px solid var(--border);
+  }
+  .tabs-row::-webkit-scrollbar { display: none; }
+  .tab {
+    appearance: none; background: none; border: none; cursor: pointer;
+    font-size: 13.5px; font-weight: 550; color: var(--muted);
+    padding: 12px 14px; border-bottom: 2px solid transparent; white-space: nowrap;
+    display: flex; align-items: center; gap: 7px;
+  }
+  .tab:hover { color: var(--ink); }
+  .tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+  .tab .cnt {
+    font-size: 11px; background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 20px; padding: 1px 7px; color: var(--muted); font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------- Layout ----------------------------------------------------- */
+  main { max-width: 1120px; margin: 0 auto; padding: 24px 20px 80px; }
+  .panel { display: none; }
+  .panel.active { display: block; animation: fade .25s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { *{animation:none!important; transition:none!important;} }
+
+  .section-head { margin-bottom: 16px; }
+  .section-head h2 { font-size: 21px; }
+  .section-head p { margin: 6px 0 0; color: var(--ink-soft); max-width: 62ch; font-size: 14px; }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); box-shadow: var(--shadow);
+  }
+
+  /* ---------- Overview --------------------------------------------------- */
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 22px; }
+  @media (max-width: 720px){ .kpis { grid-template-columns: repeat(2,1fr); } }
+  .kpi { padding: 16px; }
+  .kpi .label { font-size: 12px; color: var(--muted); font-weight: 550; }
+  .kpi .val { font-size: 30px; font-weight: 700; margin-top: 4px; letter-spacing: -.02em; }
+  .kpi .sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .kpi .val small { font-size: 15px; color: var(--muted); font-weight: 550; }
+
+  .callout {
+    display: flex; gap: 12px; padding: 14px 16px; border-radius: var(--radius-sm);
+    background: var(--warn-bg); border: 1px solid color-mix(in srgb, var(--warn) 35%, transparent);
+    margin-bottom: 22px; font-size: 13.5px; color: var(--ink);
+  }
+  .callout .ico { flex: none; font-size: 18px; line-height: 1.3; }
+  .callout b { color: var(--ink); }
+  .callout.crit { background: var(--crit-bg); border-color: color-mix(in srgb, var(--crit) 35%, transparent); }
+
+  .sites-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(268px, 1fr)); gap: 14px; }
+  .site {
+    padding: 16px; display: flex; flex-direction: column; gap: 12px; cursor: pointer;
+    transition: .15s; position: relative;
+  }
+  .site:hover { border-color: var(--accent); transform: translateY(-1px); }
+  .site-top { display: flex; align-items: flex-start; gap: 12px; }
+  .site-name { font-size: 15.5px; font-weight: 650; }
+  .site-domain { font-size: 12.5px; color: var(--muted); font-family: var(--mono); word-break: break-all; margin-top: 1px; }
+  .site-focus { font-size: 12.5px; color: var(--ink-soft); margin-top: 4px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px;
+    display: inline-flex; align-items: center; gap: 4px; border: 1px solid transparent;
+  }
+  .chip.good { background: var(--good-bg); color: var(--good); }
+  .chip.warn { background: var(--warn-bg); color: var(--warn); }
+  .chip.crit { background: var(--crit-bg); color: var(--crit); }
+  .chip.neutral { background: var(--surface-2); color: var(--muted); border-color: var(--border); }
+
+  /* score ring */
+  .ring { --p: 0; width: 46px; height: 46px; flex: none; position: relative; }
+  .ring svg { transform: rotate(-90deg); display: block; }
+  .ring .pct { position: absolute; inset: 0; display: grid; place-items: center; font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  /* progress bar */
+  .bar { height: 7px; border-radius: 10px; background: var(--ring-track); overflow: hidden; }
+  .bar > i { display: block; height: 100%; border-radius: 10px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width .4s; }
+
+  /* ---------- Checklist -------------------------------------------------- */
+  .site-picker { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .pill {
+    appearance: none; cursor: pointer; border: 1px solid var(--border-2); background: var(--surface);
+    color: var(--ink-soft); font-size: 13px; font-weight: 550; padding: 6px 12px; border-radius: 20px;
+    display: inline-flex; align-items: center; gap: 7px;
+  }
+  .pill[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .pill .dot { width: 7px; height: 7px; border-radius: 50%; }
+
+  .group { margin-bottom: 14px; overflow: hidden; }
+  .group > summary {
+    list-style: none; cursor: pointer; padding: 14px 16px; display: flex; align-items: center; gap: 12px;
+  }
+  .group > summary::-webkit-details-marker { display: none; }
+  .group summary .g-title { font-weight: 650; font-size: 15px; }
+  .group summary .g-meta { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+  .group summary .caret { transition: .2s; color: var(--muted); }
+  .group[open] summary .caret { transform: rotate(90deg); }
+  .g-desc { font-size: 12.5px; color: var(--muted); font-weight: 450; }
+  .checks { padding: 2px 16px 14px; display: flex; flex-direction: column; gap: 2px; }
+  .check {
+    display: flex; gap: 12px; padding: 10px; border-radius: 9px; align-items: flex-start;
+  }
+  .check:hover { background: var(--surface-2); }
+  .check input { margin-top: 2px; width: 18px; height: 18px; accent-color: var(--accent); flex: none; cursor: pointer; }
+  .check label { cursor: pointer; }
+  .check .c-title { font-size: 14px; font-weight: 550; }
+  .check.done .c-title { color: var(--muted); text-decoration: line-through; }
+  .check .c-help { font-size: 12.5px; color: var(--ink-soft); margin-top: 2px; }
+  .check .c-help a { text-decoration: underline; }
+  .tag-crit { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--crit); background: var(--crit-bg); padding: 1px 6px; border-radius: 5px; margin-left: 6px; vertical-align: 1px; }
+
+  /* ---------- Generator -------------------------------------------------- */
+  .gen-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+  @media (max-width: 860px){ .gen-grid { grid-template-columns: 1fr; } }
+  .field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 13px; }
+  .field label { font-size: 12.5px; font-weight: 600; color: var(--ink-soft); }
+  .field input, .field select, .field textarea {
+    font-family: inherit; font-size: 14px; padding: 9px 11px; border-radius: 8px;
+    border: 1px solid var(--border-2); background: var(--surface-2); color: var(--ink);
+  }
+  .field textarea { resize: vertical; min-height: 60px; }
+  .out { padding: 16px; margin-bottom: 14px; }
+  .out h4 { font-size: 13px; display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .counter { font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 20px; font-variant-numeric: tabular-nums; margin-left: auto; }
+  .counter.good { background: var(--good-bg); color: var(--good); }
+  .counter.warn { background: var(--warn-bg); color: var(--warn); }
+  .counter.crit { background: var(--crit-bg); color: var(--crit); }
+  pre.code {
+    font-family: var(--mono); font-size: 12.5px; background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px; overflow-x: auto; white-space: pre-wrap; word-break: break-word;
+    margin: 0; color: var(--ink); line-height: 1.5;
+  }
+  .out-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .copy-ok { color: var(--good); font-size: 12px; font-weight: 600; }
+
+  /* ---------- Tables (keywords) ----------------------------------------- */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
+  table { border-collapse: collapse; width: 100%; min-width: 720px; font-size: 13.5px; }
+  thead th {
+    text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--muted); font-weight: 650; padding: 11px 12px; background: var(--surface-2);
+    border-bottom: 1px solid var(--border); position: sticky; top: 0;
+  }
+  tbody td { padding: 6px 8px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: none; }
+  table input, table select {
+    width: 100%; border: 1px solid transparent; background: transparent; color: var(--ink);
+    font-family: inherit; font-size: 13.5px; padding: 6px 7px; border-radius: 6px;
+  }
+  table input:hover, table select:hover { border-color: var(--border-2); }
+  table input:focus, table select:focus { border-color: var(--accent); background: var(--surface); outline: none; }
+  .intent { font-weight: 600; }
+  .row-del { color: var(--muted); border: none; background: none; cursor: pointer; font-size: 16px; padding: 4px 8px; border-radius: 6px; }
+  .row-del:hover { color: var(--crit); background: var(--crit-bg); }
+  .status-sel select { font-weight: 600; }
+
+  /* ---------- Roadmap ---------------------------------------------------- */
+  .phase { margin-bottom: 16px; padding: 0; overflow: hidden; }
+  .phase-head { padding: 16px 18px; display: flex; align-items: center; gap: 14px; border-bottom: 1px solid var(--border); }
+  .phase-num {
+    width: 30px; height: 30px; border-radius: 8px; flex: none; display: grid; place-items: center;
+    background: var(--surface-2); border: 1px solid var(--border-2); font-weight: 700; font-size: 13px; color: var(--accent-2);
+  }
+  .phase-head .p-title { font-size: 15.5px; font-weight: 650; }
+  .phase-head .p-when { font-size: 12px; color: var(--muted); margin-top: 1px; }
+  .phase-head .p-prog { margin-left: auto; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .phase .checks { padding: 8px 18px 14px; }
+
+  /* ---------- Lead-gen ideas -------------------------------------------- */
+  .lead-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap: 14px; }
+  .lead { padding: 16px; }
+  .lead h4 { font-size: 14.5px; margin-bottom: 6px; }
+  .lead p { font-size: 13px; color: var(--ink-soft); margin: 0 0 10px; }
+  .lead ul { margin: 0; padding-left: 18px; font-size: 13px; color: var(--ink-soft); }
+  .lead ul li { margin-bottom: 4px; }
+
+  .add-row { margin-top: 12px; }
+  .muted-note { font-size: 12.5px; color: var(--muted); margin-top: 10px; }
+  footer.foot { max-width: 1120px; margin: 0 auto; padding: 24px 20px 40px; color: var(--muted); font-size: 12px; border-top: 1px solid var(--border); }
+
+  @media print {
+    header.top, nav.tabs, .top-actions, .site-picker, .btn { display: none !important; }
+    .panel { display: block !important; }
+    body { background: #fff; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="brand">
+      <div class="logo"><div class="logo-bars"><span class="s1"></span><span class="s2"></span><span class="s3"></span></div></div>
+      <div>
+        <h1>SEO &amp; Inbound Command Center</h1>
+        <p>Stacked group &mdash; local search &amp; lead engine</p>
+      </div>
+    </div>
+    <div class="top-spacer"></div>
+    <div class="top-actions">
+      <button class="btn ghost" id="themeBtn" title="Toggle light / dark">◐ Theme</button>
+      <button class="btn" id="exportBtn" title="Download all your data as a backup file">↓ Backup</button>
+      <button class="btn" id="importBtn" title="Restore from a backup file">↑ Restore</button>
+      <input type="file" id="importFile" accept="application/json" hidden />
+    </div>
+  </div>
+  <nav class="tabs">
+    <div class="tabs-row" role="tablist">
+      <button class="tab" role="tab" data-panel="overview" aria-selected="true">Overview</button>
+      <button class="tab" role="tab" data-panel="checklist">Site checklist</button>
+      <button class="tab" role="tab" data-panel="generator">Tag generator</button>
+      <button class="tab" role="tab" data-panel="keywords">Keywords &amp; content</button>
+      <button class="tab" role="tab" data-panel="roadmap">90-day roadmap <span class="cnt" id="roadmapCnt">0%</span></button>
+      <button class="tab" role="tab" data-panel="leads">Lead ideas</button>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <!-- ================= OVERVIEW ================= -->
+  <section class="panel active" id="panel-overview" role="tabpanel">
+    <div class="section-head">
+      <h2>Where every property stands</h2>
+      <p>One readiness score per web property, rolled up from the site checklist. Fix the reds first &mdash; a site Google can't reach or index earns zero from all the SEO work in the world.</p>
+    </div>
+
+    <div class="kpis">
+      <div class="card kpi"><div class="label">Properties tracked</div><div class="val tnum" id="kpiSites">0</div><div class="sub" id="kpiLive">0 live in DNS</div></div>
+      <div class="card kpi"><div class="label">Avg. readiness</div><div class="val tnum" id="kpiScore">0<small>%</small></div><div class="sub">across all sites</div></div>
+      <div class="card kpi"><div class="label">Critical blockers</div><div class="val tnum" id="kpiCrit" style="color:var(--crit)">0</div><div class="sub">must-fix items open</div></div>
+      <div class="card kpi"><div class="label">Roadmap done</div><div class="val tnum" id="kpiRoad">0<small>%</small></div><div class="sub">of the 90-day plan</div></div>
+    </div>
+
+    <div class="callout crit" id="dnsCallout" hidden>
+      <div class="ico">⚠️</div>
+      <div><b>Blocker &mdash; <span id="dnsList"></span> did not resolve in DNS from a neutral network.</b>
+      A domain with no DNS record is invisible to Google and to customers. Before any SEO work, confirm in your domain registrar that these point to live hosting (or decide to redirect them into a property that is live). Untick "Dead in DNS" on a site once you've verified it loads.</div>
+    </div>
+
+    <div class="callout">
+      <div class="ico">🔀</div>
+      <div><b>Watch for brand fragmentation.</b> You have more than one property covering the same service (AV on both <code>stackedav.ie</code> and <code>audiovisual.ie</code>; merch on <code>stackedmerchandise.ie</code>, <code>merch.stacked.ie</code> and <code>shop.stacked.ie</code>). Splitting one topic across domains splits your ranking authority and risks duplicate content. Decide on <b>one canonical home</b> per service and 301-redirect the rest, or set canonical tags. Track that in the roadmap.</div>
+    </div>
+
+    <div class="sites-grid" id="sitesGrid"></div>
+    <div class="add-row"><button class="btn" id="addSiteBtn">＋ Add a property</button></div>
+  </section>
+
+  <!-- ================= CHECKLIST ================= -->
+  <section class="panel" id="panel-checklist" role="tabpanel">
+    <div class="section-head">
+      <h2>Site checklist</h2>
+      <p>Work one property at a time, top group to bottom. Each tick saves automatically. Items flagged <span class="tag-crit" style="margin:0">Critical</span> are the ones that block ranking or lead capture entirely.</p>
+    </div>
+    <div class="site-picker" id="sitePicker"></div>
+    <div id="checklistGroups"></div>
+  </section>
+
+  <!-- ================= GENERATOR ================= -->
+  <section class="panel" id="panel-generator" role="tabpanel">
+    <div class="section-head">
+      <h2>Meta tag &amp; local schema generator</h2>
+      <p>Fill this in per page. It writes the three things Google reads first &mdash; the title tag, the meta description, and the <code>LocalBusiness</code> structured data &mdash; sized to the right length. Copy each block and paste it into your site's page <code>&lt;head&gt;</code>.</p>
+    </div>
+    <div class="gen-grid">
+      <div class="card" style="padding:18px">
+        <div class="field"><label for="gBiz">Business / page name</label><input id="gBiz" value="Stacked AV" /></div>
+        <div class="field"><label for="gService">Primary service (the thing people search for)</label><input id="gService" value="Audio visual installation &amp; hire" /></div>
+        <div class="field"><label for="gLoc">Location you serve</label><input id="gLoc" value="Dublin, Ireland" /></div>
+        <div class="field"><label for="gKw">Focus keyword</label><input id="gKw" value="AV installation Dublin" /></div>
+        <div class="field"><label for="gDesc">One-line pitch (what you do + why choose you)</label><textarea id="gDesc">Professional AV installation and event hire across Ireland. Boardrooms, venues and live events, installed and supported by one team.</textarea></div>
+        <div class="gen-grid" style="gap:12px">
+          <div class="field"><label for="gPhone">Phone</label><input id="gPhone" value="+353 1 234 5678" /></div>
+          <div class="field"><label for="gUrl">Page URL</label><input id="gUrl" value="https://stackedav.ie" /></div>
+        </div>
+        <div class="gen-grid" style="gap:12px">
+          <div class="field"><label for="gStreet">Street address</label><input id="gStreet" value="" placeholder="Unit 4, Example Business Park" /></div>
+          <div class="field"><label for="gCity">City / county</label><input id="gCity" value="Dublin" /></div>
+        </div>
+      </div>
+      <div>
+        <div class="card out">
+          <div class="out-head"><h4 style="margin:0">Title tag <span class="counter" id="titleCnt">0</span></h4><button class="btn tiny" data-copy="outTitle">Copy</button></div>
+          <pre class="code" id="outTitle"></pre>
+        </div>
+        <div class="card out">
+          <div class="out-head"><h4 style="margin:0">Meta description <span class="counter" id="descCnt">0</span></h4><button class="btn tiny" data-copy="outDesc">Copy</button></div>
+          <pre class="code" id="outDesc"></pre>
+        </div>
+        <div class="card out">
+          <div class="out-head"><h4 style="margin:0">LocalBusiness structured data (JSON-LD)</h4><button class="btn tiny" data-copy="outSchema">Copy</button></div>
+          <pre class="code" id="outSchema"></pre>
+        </div>
+        <p class="muted-note">Paste the JSON-LD just before <code>&lt;/head&gt;</code>. Test it afterwards with Google's free <a href="https://search.google.com/test/rich-results" target="_blank" rel="noopener">Rich Results Test</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= KEYWORDS ================= -->
+  <section class="panel" id="panel-keywords" role="tabpanel">
+    <div class="section-head">
+      <h2>Keywords &amp; content plan</h2>
+      <p>Your running list of what to rank for and the page or post that will target it. Aim for keywords with clear buying intent ("AV hire Dublin", "IT support near me") over vague high-volume terms. Everything saves as you type.</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th style="width:22%">Keyword / search phrase</th>
+          <th style="width:12%">Intent</th>
+          <th style="width:16%">Target site</th>
+          <th style="width:30%">Page / content to create</th>
+          <th style="width:14%">Status</th>
+          <th style="width:6%"></th>
+        </tr></thead>
+        <tbody id="kwBody"></tbody>
+      </table>
+    </div>
+    <div class="add-row"><button class="btn" id="addKwBtn">＋ Add keyword</button></div>
+  </section>
+
+  <!-- ================= ROADMAP ================= -->
+  <section class="panel" id="panel-roadmap" role="tabpanel">
+    <div class="section-head">
+      <h2>Your 90-day roadmap</h2>
+      <p>A sequenced plan &mdash; foundations before polish, because ranking work is wasted on a site that isn't indexable. Tick items as you go; the progress feeds the Overview. Print this page for a paper checklist.</p>
+    </div>
+    <div id="roadmapPhases"></div>
+  </section>
+
+  <!-- ================= LEADS ================= -->
+  <section class="panel" id="panel-leads" role="tabpanel">
+    <div class="section-head">
+      <h2>Turning traffic into enquiries</h2>
+      <p>SEO brings visitors; these turn visitors into calls and quote requests. Each card is a lead-magnet or conversion tactic suited to your service lines.</p>
+    </div>
+    <div class="lead-grid" id="leadGrid"></div>
+  </section>
+</main>
+
+<footer class="foot">
+  Runs entirely in your browser &mdash; your data is saved on this device only (nothing is uploaded). Use <b>Backup</b> before switching computers. Built for the Stacked group.
+</footer>
+
+<script>
+"use strict";
+/* ====================================================================== *
+ *  Stacked SEO & Inbound Command Center — single-file, no dependencies.  *
+ *  All state persists in localStorage under one key.                     *
+ * ====================================================================== */
+
+const LS_KEY = "stacked-seo-cc-v1";
+
+/* ---------- Checklist template (shared by every site) ------------------ */
+const CHECKLIST = [
+  { id:"tech", title:"Technical foundation", desc:"Can Google reach, read and trust the site at all?", items:[
+    { id:"dns",    crit:true,  t:"Domain resolves in DNS and the page loads", h:"Type the address in a private browser window. If it doesn't load, no SEO matters yet." },
+    { id:"https",  crit:true,  t:"Loads over HTTPS with a valid certificate", h:"You should see a padlock, no security warning." },
+    { id:"mobile", crit:true,  t:"Looks and works well on a phone", h:"Most local searches are on mobile. Check it on your own phone." },
+    { id:"gsc",    crit:true,  t:"Verified in Google Search Console", h:"Free. This is how you tell Google the site exists and see what you rank for. <a href='https://search.google.com/search-console' target='_blank' rel='noopener'>Set up →</a>" },
+    { id:"sitemap",t:"XML sitemap exists and is submitted to Search Console", h:"Most site builders generate /sitemap.xml automatically." },
+    { id:"robots", t:"robots.txt is not blocking Google", h:"Check yoursite.ie/robots.txt doesn't contain 'Disallow: /'." },
+    { id:"ga4",    t:"Google Analytics (GA4) installed", h:"So you can see traffic and which pages convert." },
+    { id:"speed",  t:"Loads in under ~3 seconds", h:"Test free at <a href='https://pagespeed.web.dev' target='_blank' rel='noopener'>PageSpeed Insights</a>. Compress big images first." },
+    { id:"canon",  t:"Canonical tags set (no duplicate content across your sites)", h:"Critical when two of your domains cover the same service." },
+  ]},
+  { id:"onpage", title:"On-page SEO", desc:"Does each page tell Google and the visitor what it's about?", items:[
+    { id:"title",  crit:true, t:"Unique title tag, under ~60 chars, with keyword + location", h:"Use the Tag generator tab to write these." },
+    { id:"meta",   t:"Unique meta description under ~155 chars with a call to action", h:"This is your advert in the search results." },
+    { id:"h1",     crit:true, t:"One clear H1 per page containing the main keyword", h:"e.g. 'Audio Visual Installation in Dublin'." },
+    { id:"subs",   t:"Descriptive H2/H3 subheadings", h:"Break content up and work in related phrases." },
+    { id:"alt",    t:"Alt text on every image", h:"Describe the photo — helps image search and accessibility." },
+    { id:"internal",t:"Internal links between related pages (and sister sites where it helps)", h:"Guide visitors and spread ranking signals." },
+    { id:"words",  t:"Key pages have genuine, useful content (300+ words)", h:"Thin pages rarely rank. Answer the questions a buyer would ask." },
+  ]},
+  { id:"local", title:"Local SEO", desc:"The biggest driver of inbound calls for Irish service businesses.", items:[
+    { id:"gbp",    crit:true, t:"Google Business Profile claimed and fully completed", h:"Hours, services, service area, 10+ photos. This is what shows in Maps. <a href='https://business.google.com' target='_blank' rel='noopener'>Manage →</a>" },
+    { id:"nap",    crit:true, t:"Name, Address, Phone identical everywhere", h:"Same format on every site and every listing — inconsistency confuses Google." },
+    { id:"schema", t:"LocalBusiness structured data on the site", h:"Generate it in the Tag generator tab." },
+    { id:"dirs",   t:"Listed on key Irish directories", h:"Golden Pages, Yelp, Yell, your local Chamber of Commerce, industry directories." },
+    { id:"locpages",t:"Location / service-area pages", h:"e.g. 'Event AV Hire Cork', 'IT Support Galway' — one page per place you serve." },
+    { id:"reviews",t:"Actively requesting Google reviews from happy clients", h:"Send a review link after every job. Reviews strongly affect local ranking." },
+  ]},
+  { id:"content", title:"Content engine", desc:"What earns rankings, links and trust over time.", items:[
+    { id:"cases",  t:"Case studies / project gallery with photos", h:"AV and events are visual — show the work. Great for sharing and links." },
+    { id:"blog",   t:"A blog / insights section published regularly", h:"Target the questions buyers ask before they buy." },
+    { id:"faq",    t:"FAQ page targeting question keywords", h:"'How much does AV hire cost?' etc. Can win featured snippets." },
+    { id:"magnet", t:"A clear lead magnet", h:"Free quote, buyer's guide, or checklist — see the Lead ideas tab." },
+  ]},
+  { id:"offpage", title:"Authority & links", desc:"Signals from the rest of the web that you're legit.", items:[
+    { id:"citations",t:"Consistent NAP citations across directories", h:"Consistency matters more than volume." },
+    { id:"links",  t:"Backlinks from partners, venues, suppliers, press", h:"Ask event venues and suppliers to link to you; get listed on their partner pages." },
+    { id:"social", t:"Active, linked social profiles", h:"LinkedIn for IT/workplace; Instagram for AV/events/merch. Link them from the site." },
+  ]},
+  { id:"convert", title:"Lead capture", desc:"Do visitors actually become enquiries?", items:[
+    { id:"tel",    crit:true, t:"Phone number is a tap-to-call link on mobile", h:"Use tel: links so a tap dials you." },
+    { id:"form",   crit:true, t:"Contact / quote form is easy to find on every page", h:"Above the fold or a sticky button. Don't make people hunt." },
+    { id:"cta",    t:"Clear call-to-action on every page", h:"'Get a free quote' repeated consistently." },
+    { id:"whatsapp",t:"WhatsApp or callback option", h:"Lowers the barrier to a first contact." },
+    { id:"track",  t:"Form submissions tracked as conversions in GA4", h:"So you know which pages and keywords actually generate leads." },
+  ]},
+];
+
+/* ---------- Roadmap template ------------------------------------------- */
+const ROADMAP = [
+  { id:"p0", title:"Fix the foundations", when:"Week 1 — do this before anything else", items:[
+    { id:"r-dns",  t:"Confirm all domains resolve & load (or redirect the dead ones)", h:"stackedavevent.ie, stackedwps.ie, stackedmerchandise.ie did not resolve — verify or redirect." },
+    { id:"r-consol",t:"Decide one canonical home per service; plan 301 redirects for duplicates", h:"e.g. pick stackedav.ie OR audiovisual.ie as the AV home." },
+    { id:"r-gsc",  t:"Set up Google Search Console + GA4 on every live site", h:"" },
+    { id:"r-gbp",  t:"Claim / complete a Google Business Profile for each brand", h:"" },
+    { id:"r-https",t:"Confirm HTTPS and mobile-friendliness on every site", h:"" },
+  ]},
+  { id:"p1", title:"On-page basics", when:"Weeks 2–4", items:[
+    { id:"r-titles",t:"Write unique title tags + meta descriptions for key pages", h:"Use the Tag generator." },
+    { id:"r-h1",   t:"One keyword-led H1 per page; add descriptive subheadings", h:"" },
+    { id:"r-schema",t:"Add LocalBusiness JSON-LD to each site", h:"" },
+    { id:"r-nap",  t:"Make NAP identical across all sites and listings", h:"" },
+    { id:"r-alt",  t:"Add alt text and compress oversized images", h:"" },
+  ]},
+  { id:"p2", title:"Local presence & reviews", when:"Weeks 4–6", items:[
+    { id:"r-dirs", t:"List every brand on the main Irish directories", h:"Golden Pages, Yelp, Yell, local Chamber." },
+    { id:"r-review",t:"Set up a review-request flow (link sent after each job)", h:"" },
+    { id:"r-loc",  t:"Build location / service-area pages for your top counties", h:"" },
+  ]},
+  { id:"p3", title:"Content engine", when:"Weeks 6–10", items:[
+    { id:"r-cases",t:"Publish 3–5 photo case studies per relevant brand", h:"AV & events especially." },
+    { id:"r-blog", t:"Start a blog: 1 useful post per fortnight per priority site", h:"Target buyer questions from the keyword plan." },
+    { id:"r-faq",  t:"Add an FAQ page targeting question keywords", h:"" },
+  ]},
+  { id:"p4", title:"Convert & build authority", when:"Weeks 10–12", items:[
+    { id:"r-magnet",t:"Launch a lead magnet + prominent CTAs", h:"Free quote / buyer's guide." },
+    { id:"r-conv", t:"Track form & call conversions in GA4", h:"" },
+    { id:"r-links",t:"Outreach to venues, suppliers & partners for backlinks", h:"" },
+    { id:"r-measure",t:"Review Search Console monthly; double down on what's working", h:"" },
+  ]},
+];
+
+/* ---------- Lead-gen idea cards ---------------------------------------- */
+const LEADS = [
+  { h:"Instant quote request", p:"The single highest-value lead magnet for service businesses.", ul:["Short form: service, date, rough budget","Reply within hours, not days","Track as a GA4 conversion"] },
+  { h:"Free AV / room-tech audit", p:"For stackedav / stackedwps — a low-commitment first step.", ul:["'Book a free 20-min site walkthrough'","Positions you as the expert","Natural lead into a proposal"] },
+  { h:"Buyer's guide download", p:"Capture email from researchers who aren't ready to buy yet.", ul:["'The Event Organiser's AV Checklist'","'IT Support Buyer's Guide for SMEs'","Gate it behind an email field"] },
+  { h:"Project gallery / case studies", p:"Visual proof sells AV, events and merch.", ul:["Before/after and event photos","Client name + a one-line result","Add a 'Get this for your event' CTA"] },
+  { h:"Google review engine", p:"Reviews drive both ranking and trust.", ul:["Send a review link after every job","Aim for a steady trickle, not a burst","Reply to every review"] },
+  { h:"Merch sample / quote pack", p:"For merchandise & shop properties.", ul:["'Request a free sample'","'Get branded-merch pricing'","Bulk-order enquiry form"] },
+  { h:"Tap-to-call + WhatsApp", p:"Remove every barrier to first contact on mobile.", ul:["Sticky call button on mobile","WhatsApp for quick questions","Callback request option"] },
+  { h:"Retarget & follow up", p:"Most visitors don't convert first time.", ul:["Meta/Google retargeting pixel","Email nurture after a download","Seasonal offers to past clients"] },
+];
+
+/* ---------- Seed data -------------------------------------------------- */
+function seedState(){
+  const sites = [
+    { name:"Stacked (group hub)",   domain:"stacked.ie",            focus:"Parent brand — routes visitors to each service", kw:"Stacked Ireland, AV IT events merchandise", dead:false },
+    { name:"Stacked AV",            domain:"stackedav.ie",          focus:"Audio-visual installation & hire",              kw:"AV installation Dublin, audio visual hire Ireland", dead:false },
+    { name:"Audiovisual.ie",        domain:"audiovisual.ie",        focus:"AV (second/overlapping domain — consolidate?)", kw:"audio visual Ireland, AV hire", dead:false },
+    { name:"Stacked AV Event",      domain:"stackedavevent.ie",     focus:"Live event AV & production",                    kw:"event AV production Ireland, conference AV hire", dead:true },
+    { name:"Stacked IT",            domain:"stackedit.ie",          focus:"IT services & support",                         kw:"IT support Dublin, managed IT services Ireland", dead:false },
+    { name:"Stacked WPS",           domain:"stackedwps.ie",         focus:"Workplace / meeting-room technology",           kw:"workplace AV solutions, meeting room technology Ireland", dead:true },
+    { name:"Stacked Merchandise",   domain:"stackedmerchandise.ie", focus:"Branded merchandise",                           kw:"branded merchandise Ireland, promotional products Dublin", dead:true },
+    { name:"Merch (subdomain)",     domain:"merch.stacked.ie",      focus:"Merchandise — live subdomain",                  kw:"branded merchandise Ireland", dead:false },
+    { name:"Shop",                  domain:"shop.stacked.ie",       focus:"Online shop",                                   kw:"stacked shop, buy branded merchandise", dead:false },
+  ];
+  return {
+    sites: sites.map((s,i)=>({ id:"s"+i, ...s, checks:{} })),
+    activeSite: "s0",
+    roadmap: {},
+    keywords: [
+      { kw:"AV installation Dublin",        intent:"Commercial", site:"stackedav.ie",     page:"Homepage / AV installation service page", status:"To do" },
+      { kw:"event AV hire Ireland",         intent:"Commercial", site:"stackedavevent.ie",page:"Event AV landing page",                    status:"To do" },
+      { kw:"managed IT support Dublin",     intent:"Commercial", site:"stackedit.ie",     page:"IT support service page",                  status:"To do" },
+      { kw:"how much does AV hire cost",    intent:"Info",       site:"stackedav.ie",     page:"Blog / FAQ post",                          status:"Idea" },
+      { kw:"branded merchandise Ireland",   intent:"Commercial", site:"merch.stacked.ie", page:"Merch category page",                      status:"To do" },
+      { kw:"meeting room technology",       intent:"Commercial", site:"stackedwps.ie",    page:"Workplace solutions page",                 status:"Idea" },
+    ],
+  };
+}
+
+/* ---------- State load / save ----------------------------------------- */
+let state = load();
+function load(){
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e){ /* fall through to seed */ }
+  return seedState();
+}
+let saveTimer = null;
+function save(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(()=>{
+    try { localStorage.setItem(LS_KEY, JSON.stringify(state)); } catch(e){}
+  }, 150);
+}
+
+/* ---------- Small helpers --------------------------------------------- */
+const $  = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
+const esc = s => String(s).replace(/[&<>"']/g, c=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+const totalChecks = () => CHECKLIST.reduce((n,g)=>n+g.items.length,0);
+const critIds = CHECKLIST.flatMap(g=>g.items.filter(i=>i.crit).map(i=>i.id));
+
+function siteScore(site){
+  const done = Object.values(site.checks).filter(Boolean).length;
+  return Math.round(done / totalChecks() * 100);
+}
+function siteCritOpen(site){
+  return critIds.filter(id=>!site.checks[id]).length;
+}
+function scoreColor(p){ return p>=75?"var(--good)":p>=40?"var(--warn)":"var(--crit)"; }
+
+/* ====================================================================== *
+ *  OVERVIEW                                                              *
+ * ====================================================================== */
+function renderOverview(){
+  const sites = state.sites;
+  const live = sites.filter(s=>!s.dead).length;
+  const avg = sites.length ? Math.round(sites.reduce((n,s)=>n+siteScore(s),0)/sites.length) : 0;
+  const crit = sites.reduce((n,s)=>n + (s.dead?1:0) + siteCritOpen(s), 0);
+
+  $("#kpiSites").textContent = sites.length;
+  $("#kpiLive").textContent  = live + " live in DNS";
+  $("#kpiScore").innerHTML   = avg + "<small>%</small>";
+  $("#kpiCrit").textContent  = crit;
+  $("#kpiRoad").innerHTML    = roadmapPct() + "<small>%</small>";
+
+  // DNS callout
+  const dead = sites.filter(s=>s.dead).map(s=>s.domain);
+  const co = $("#dnsCallout");
+  if (dead.length){ co.hidden=false; $("#dnsList").textContent = dead.join(", "); }
+  else co.hidden = true;
+
+  // Site cards
+  const grid = $("#sitesGrid");
+  grid.innerHTML = "";
+  sites.forEach(s=>{
+    const p = siteScore(s);
+    const co2 = siteCritOpen(s);
+    const card = document.createElement("div");
+    card.className = "card site";
+    card.tabIndex = 0;
+    card.setAttribute("role","button");
+    card.innerHTML = `
+      <div class="site-top">
+        <div style="flex:1;min-width:0">
+          <div class="site-name">${esc(s.name)}</div>
+          <div class="site-domain">${esc(s.domain)}</div>
+          <div class="site-focus">${esc(s.focus)}</div>
+        </div>
+        ${ring(p)}
+      </div>
+      <div class="chips">
+        ${ s.dead ? `<span class="chip crit">● Dead in DNS</span>` : `<span class="chip good">● Live</span>` }
+        ${ co2 ? `<span class="chip warn">${co2} critical open</span>` : `<span class="chip neutral">no critical gaps</span>` }
+      </div>
+      <div class="bar"><i style="width:${p}%"></i></div>
+    `;
+    card.addEventListener("click", ()=>{ state.activeSite = s.id; save(); go("checklist"); });
+    card.addEventListener("keydown", e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); card.click(); } });
+    grid.appendChild(card);
+  });
+}
+function ring(p){
+  const r=20, c=2*Math.PI*r, off=c*(1-p/100), col=scoreColor(p);
+  return `<div class="ring"><svg width="46" height="46" viewBox="0 0 46 46">
+    <circle cx="23" cy="23" r="${r}" fill="none" stroke="var(--ring-track)" stroke-width="4"/>
+    <circle cx="23" cy="23" r="${r}" fill="none" stroke="${col}" stroke-width="4" stroke-linecap="round"
+      stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"/>
+  </svg><div class="pct" style="color:${col}">${p}</div></div>`;
+}
+
+/* ====================================================================== *
+ *  CHECKLIST                                                             *
+ * ====================================================================== */
+function renderSitePicker(){
+  const wrap = $("#sitePicker");
+  wrap.innerHTML = "";
+  state.sites.forEach(s=>{
+    const b = document.createElement("button");
+    b.className = "pill";
+    b.setAttribute("aria-pressed", String(s.id===state.activeSite));
+    const p = siteScore(s);
+    b.innerHTML = `<span class="dot" style="background:${scoreColor(p)}"></span>${esc(s.name)} <span class="tnum" style="color:var(--muted)">${p}%</span>`;
+    b.addEventListener("click", ()=>{ state.activeSite=s.id; save(); renderSitePicker(); renderChecklist(); });
+    wrap.appendChild(b);
+  });
+}
+function renderChecklist(){
+  const site = state.sites.find(s=>s.id===state.activeSite) || state.sites[0];
+  if (!site) { $("#checklistGroups").innerHTML = "<p class='muted-note'>Add a property on the Overview tab to begin.</p>"; return; }
+  const host = $("#checklistGroups");
+  host.innerHTML = "";
+
+  // "Dead in DNS" toggle for this site
+  const banner = document.createElement("div");
+  banner.className = "card";
+  banner.style.cssText = "padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap";
+  banner.innerHTML = `
+    <div style="flex:1;min-width:180px">
+      <div style="font-weight:650">${esc(site.name)} <span style="color:var(--muted);font-weight:450;font-family:var(--mono);font-size:12.5px">${esc(site.domain)}</span></div>
+      <div style="font-size:12.5px;color:var(--muted)">${esc(site.focus)}</div>
+    </div>
+    <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:550;cursor:pointer">
+      <input type="checkbox" id="deadToggle" ${site.dead?"checked":""} style="width:16px;height:16px;accent-color:var(--crit)"> Dead in DNS
+    </label>`;
+  host.appendChild(banner);
+  $("#deadToggle").addEventListener("change", e=>{ site.dead=e.target.checked; save(); renderOverview(); renderSitePicker(); });
+
+  CHECKLIST.forEach(group=>{
+    const done = group.items.filter(i=>site.checks[i.id]).length;
+    const det = document.createElement("details");
+    det.className = "card group";
+    det.open = done < group.items.length; // collapse completed groups
+    det.innerHTML = `
+      <summary>
+        <div>
+          <div class="g-title">${esc(group.title)}</div>
+          <div class="g-desc">${esc(group.desc)}</div>
+        </div>
+        <div class="g-meta">
+          <span class="tnum" style="font-size:12px;color:var(--muted)">${done}/${group.items.length}</span>
+          <div class="bar" style="width:70px"><i style="width:${Math.round(done/group.items.length*100)}%"></i></div>
+          <span class="caret">▸</span>
+        </div>
+      </summary>
+      <div class="checks"></div>`;
+    const cont = $(".checks", det);
+    group.items.forEach(item=>{
+      const on = !!site.checks[item.id];
+      const row = document.createElement("div");
+      row.className = "check" + (on?" done":"");
+      const cid = `chk-${site.id}-${item.id}`;
+      row.innerHTML = `
+        <input type="checkbox" id="${cid}" ${on?"checked":""}>
+        <label for="${cid}">
+          <div class="c-title">${esc(item.t)}${item.crit?'<span class="tag-crit">Critical</span>':''}</div>
+          ${item.h?`<div class="c-help">${item.h}</div>`:''}
+        </label>`;
+      $("input", row).addEventListener("change", e=>{
+        site.checks[item.id] = e.target.checked;
+        row.classList.toggle("done", e.target.checked);
+        save(); renderOverview(); renderSitePicker(); updateSummaryMeta(det, group, site);
+      });
+      cont.appendChild(row);
+    });
+    host.appendChild(det);
+  });
+}
+function updateSummaryMeta(det, group, site){
+  const done = group.items.filter(i=>site.checks[i.id]).length;
+  const meta = $(".g-meta", det);
+  $("span.tnum", meta).textContent = `${done}/${group.items.length}`;
+  $(".bar > i", meta).style.width = Math.round(done/group.items.length*100)+"%";
+}
+
+/* ====================================================================== *
+ *  GENERATOR                                                             *
+ * ====================================================================== */
+function truncate(s, n){ s=s.trim(); return s.length<=n ? s : s.slice(0,n-1).trim()+"…"; }
+function counterClass(len, lo, hi){ return (len>=lo && len<=hi) ? "good" : (len>hi ? "crit" : "warn"); }
+
+function renderGenerator(){
+  const v = id => $("#"+id).value.trim();
+  const biz=v("gBiz"), svc=v("gService"), loc=v("gLoc"), kw=v("gKw"),
+        desc=v("gDesc"), phone=v("gPhone"), url=v("gUrl"), street=v("gStreet"), city=v("gCity");
+
+  // Title: "Keyword | Business" style, capped ~60
+  let title = kw ? `${cap(kw)} | ${biz}` : `${svc} in ${loc} | ${biz}`;
+  title = truncate(title, 60);
+  const tEl=$("#outTitle"); tEl.textContent = title;
+  const tC=$("#titleCnt"); tC.textContent = title.length + " chars"; tC.className = "counter " + counterClass(title.length, 30, 60);
+
+  // Meta description ~155
+  let md = desc || `${svc} in ${loc}. Get in touch for a fast, free quote.`;
+  md = truncate(md, 158);
+  const dEl=$("#outDesc"); dEl.textContent = md;
+  const dC=$("#descCnt"); dC.textContent = md.length + " chars"; dC.className = "counter " + counterClass(md.length, 70, 158);
+
+  // JSON-LD LocalBusiness
+  const schema = {
+    "@context":"https://schema.org",
+    "@type":"LocalBusiness",
+    "name":biz || undefined,
+    "description":(desc||svc) || undefined,
+    "url":url || undefined,
+    "telephone":phone || undefined,
+    "areaServed":loc || undefined,
+  };
+  if (street || city){
+    schema.address = {
+      "@type":"PostalAddress",
+      ...(street?{"streetAddress":street}:{}),
+      ...(city?{"addressLocality":city}:{}),
+      "addressCountry":"IE",
+    };
+  }
+  // strip undefined
+  Object.keys(schema).forEach(k=>schema[k]===undefined && delete schema[k]);
+  const json = `<script type="application/ld+json">\n${JSON.stringify(schema,null,2)}\n<\/script>`;
+  $("#outSchema").textContent = json;
+}
+function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+
+/* ====================================================================== *
+ *  KEYWORDS                                                              *
+ * ====================================================================== */
+const INTENTS = ["Commercial","Transactional","Info","Navigational"];
+const KW_STATUS = ["Idea","To do","In progress","Published"];
+function renderKeywords(){
+  const body = $("#kwBody");
+  body.innerHTML = "";
+  const siteOpts = state.sites.map(s=>s.domain);
+  state.keywords.forEach((row, idx)=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><input value="${esc(row.kw)}" data-f="kw" placeholder="e.g. AV hire Dublin"></td>
+      <td class="intent"><select data-f="intent">${INTENTS.map(o=>`<option ${o===row.intent?"selected":""}>${o}</option>`).join("")}</select></td>
+      <td><select data-f="site"><option value=""></option>${siteOpts.map(o=>`<option ${o===row.site?"selected":""}>${esc(o)}</option>`).join("")}</select></td>
+      <td><input value="${esc(row.page)}" data-f="page" placeholder="Page or post to create"></td>
+      <td class="status-sel"><select data-f="status">${KW_STATUS.map(o=>`<option ${o===row.status?"selected":""}>${o}</option>`).join("")}</select></td>
+      <td><button class="row-del" title="Delete row" aria-label="Delete row">×</button></td>`;
+    $$("[data-f]", tr).forEach(el=>{
+      el.addEventListener("input", ()=>{ row[el.dataset.f]=el.value; save(); });
+      el.addEventListener("change", ()=>{ row[el.dataset.f]=el.value; save(); });
+    });
+    $(".row-del", tr).addEventListener("click", ()=>{ state.keywords.splice(idx,1); save(); renderKeywords(); });
+    body.appendChild(tr);
+  });
+}
+
+/* ====================================================================== *
+ *  ROADMAP                                                               *
+ * ====================================================================== */
+function roadmapTotal(){ return ROADMAP.reduce((n,p)=>n+p.items.length,0); }
+function roadmapDone(){ return ROADMAP.reduce((n,p)=>n+p.items.filter(i=>state.roadmap[i.id]).length,0); }
+function roadmapPct(){ return Math.round(roadmapDone()/roadmapTotal()*100); }
+function renderRoadmap(){
+  $("#roadmapCnt").textContent = roadmapPct()+"%";
+  const host = $("#roadmapPhases");
+  host.innerHTML = "";
+  ROADMAP.forEach((phase,i)=>{
+    const done = phase.items.filter(it=>state.roadmap[it.id]).length;
+    const card = document.createElement("div");
+    card.className = "card phase";
+    card.innerHTML = `
+      <div class="phase-head">
+        <div class="phase-num">${i+1}</div>
+        <div><div class="p-title">${esc(phase.title)}</div><div class="p-when">${esc(phase.when)}</div></div>
+        <div class="p-prog tnum">${done}/${phase.items.length}</div>
+      </div>
+      <div class="checks"></div>`;
+    const cont = $(".checks", card);
+    phase.items.forEach(it=>{
+      const on = !!state.roadmap[it.id];
+      const row = document.createElement("div");
+      row.className = "check" + (on?" done":"");
+      const cid = "rd-"+it.id;
+      row.innerHTML = `
+        <input type="checkbox" id="${cid}" ${on?"checked":""}>
+        <label for="${cid}"><div class="c-title">${esc(it.t)}</div>${it.h?`<div class="c-help">${esc(it.h)}</div>`:''}</label>`;
+      $("input",row).addEventListener("change", e=>{
+        state.roadmap[it.id]=e.target.checked; row.classList.toggle("done",e.target.checked);
+        save();
+        $(".p-prog",card).textContent = phase.items.filter(x=>state.roadmap[x.id]).length+"/"+phase.items.length;
+        $("#roadmapCnt").textContent = roadmapPct()+"%";
+        renderOverview();
+      });
+      cont.appendChild(row);
+    });
+    host.appendChild(card);
+  });
+}
+
+/* ====================================================================== *
+ *  LEADS                                                                 *
+ * ====================================================================== */
+function renderLeads(){
+  const grid = $("#leadGrid");
+  grid.innerHTML = LEADS.map(l=>`
+    <div class="card lead">
+      <h4>${esc(l.h)}</h4>
+      <p>${esc(l.p)}</p>
+      <ul>${l.ul.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+    </div>`).join("");
+}
+
+/* ====================================================================== *
+ *  Tabs / navigation                                                     *
+ * ====================================================================== */
+function go(name){
+  $$(".tab").forEach(t=>t.setAttribute("aria-selected", String(t.dataset.panel===name)));
+  $$(".panel").forEach(p=>p.classList.toggle("active", p.id==="panel-"+name));
+  if (name==="checklist"){ renderSitePicker(); renderChecklist(); }
+  if (name==="overview") renderOverview();
+  if (name==="roadmap") renderRoadmap();
+  window.scrollTo({top:0, behavior:"instant" in window ? "instant" : "auto"});
+}
+$$(".tab").forEach(t=>t.addEventListener("click", ()=>go(t.dataset.panel)));
+
+/* ---------- Add site --------------------------------------------------- */
+$("#addSiteBtn").addEventListener("click", ()=>{
+  const domain = prompt("Domain (e.g. newsite.ie):");
+  if (!domain) return;
+  const name = prompt("Short name for this property:", domain) || domain;
+  const id = "s"+Date.now();
+  state.sites.push({ id, name, domain, focus:"", kw:"", dead:false, checks:{} });
+  state.activeSite = id; save(); renderOverview();
+});
+
+/* ---------- Add keyword ------------------------------------------------ */
+$("#addKwBtn").addEventListener("click", ()=>{
+  state.keywords.push({ kw:"", intent:"Commercial", site:"", page:"", status:"Idea" });
+  save(); renderKeywords();
+  const rows = $$("#kwBody tr"); rows[rows.length-1]?.querySelector("input")?.focus();
+});
+
+/* ---------- Generator wiring ------------------------------------------ */
+["gBiz","gService","gLoc","gKw","gDesc","gPhone","gUrl","gStreet","gCity"].forEach(id=>{
+  $("#"+id).addEventListener("input", renderGenerator);
+});
+$$("[data-copy]").forEach(btn=>{
+  btn.addEventListener("click", async ()=>{
+    const txt = $("#"+btn.dataset.copy).textContent;
+    try { await navigator.clipboard.writeText(txt); }
+    catch(e){ const ta=document.createElement("textarea"); ta.value=txt; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove(); }
+    const old = btn.textContent; btn.textContent = "✓ Copied"; btn.style.color="var(--good)";
+    setTimeout(()=>{ btn.textContent=old; btn.style.color=""; }, 1400);
+  });
+});
+
+/* ---------- Theme toggle ---------------------------------------------- */
+$("#themeBtn").addEventListener("click", ()=>{
+  const root = document.documentElement;
+  const cur = root.getAttribute("data-theme");
+  const isDark = cur ? cur==="dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  root.setAttribute("data-theme", isDark ? "light" : "dark");
+  try { localStorage.setItem(LS_KEY+"-theme", root.getAttribute("data-theme")); } catch(e){}
+});
+(function initTheme(){ try{ const t=localStorage.getItem(LS_KEY+"-theme"); if(t) document.documentElement.setAttribute("data-theme",t);}catch(e){} })();
+
+/* ---------- Backup / restore ------------------------------------------ */
+$("#exportBtn").addEventListener("click", ()=>{
+  const blob = new Blob([JSON.stringify(state,null,2)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "stacked-seo-backup.json";
+  a.click(); URL.revokeObjectURL(a.href);
+});
+$("#importBtn").addEventListener("click", ()=>$("#importFile").click());
+$("#importFile").addEventListener("change", e=>{
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const data = JSON.parse(r.result);
+      if (!data.sites) throw new Error("not a valid backup");
+      state = data; save(); renderAll();
+      alert("Restored from backup.");
+    } catch(err){ alert("Couldn't read that file — is it a Stacked backup?"); }
+  };
+  r.readAsText(f);
+  e.target.value = "";
+});
+
+/* ---------- Boot ------------------------------------------------------- */
+function renderAll(){
+  renderOverview(); renderSitePicker(); renderChecklist();
+  renderGenerator(); renderKeywords(); renderRoadmap(); renderLeads();
+}
+renderAll();
+</script>
+</body>
+</html>
