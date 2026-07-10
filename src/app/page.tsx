@@ -52,6 +52,14 @@ export default function HomePage() {
               💌 Guestbook
             </Link>
           </div>
+          <div className="mt-4">
+            <Link
+              href="/shopping"
+              className="inline-block rounded-full border-2 border-blush px-7 py-4 text-lg text-blush-dark transition-colors hover:bg-blush/10"
+            >
+              🛒 Smart shopping list
+            </Link>
+          </div>
         </section>
 
         <footer className="mt-10 text-center text-sm text-stone-400">
