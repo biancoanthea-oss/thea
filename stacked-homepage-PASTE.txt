@@ -28,13 +28,13 @@
   .sit-home .sec-head a.more svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.4}
 
   /* ===== VALUE STRIP ===== */
-  .sit-home .value{background:#EE7623;color:#fff;padding-top:28px}
+  .sit-home .value{background:#25282A;color:#fff;padding-top:28px}
   .sit-home .value-grid{display:grid;grid-template-columns:repeat(4,1fr)}
   .sit-home .value-col{padding:22px;text-align:center;border-right:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;gap:12px}
   .sit-home .value-col:last-child{border-right:none}
   .sit-home .value-col svg{width:26px;height:26px;stroke:#fff;fill:none;stroke-width:2;flex:none}
   .sit-home .value-col b{font-size:14.5px;font-weight:800;display:block}
-  .sit-home .value-col span{font-size:12.5px;color:#fff0e6}
+  .sit-home .value-col span{font-size:12.5px;color:#c7d0d6}
   @media(max-width:760px){.sit-home .value-grid{grid-template-columns:1fr 1fr}.sit-home .value-col:nth-child(2){border-right:none}}
 
   /* ===== BIG CATEGORY TILES ===== */
