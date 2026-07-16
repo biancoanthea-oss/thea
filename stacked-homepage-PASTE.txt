@@ -150,7 +150,7 @@
   <!-- VALUE STRIP -->
   <section class="band value">
     <div class="wrap value-grid">
-      <div class="value-col"><svg viewBox="0 0 24 24"><path d="M3 9l9-6 9 6v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 21V12h6v9"/></svg><div><b>Since 2007</b><span>Trusted Irish IT supplier</span></div></div>
+      <div class="value-col"><svg viewBox="0 0 24 24"><path d="M3 9l9-6 9 6v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 21V12h6v9"/></svg><div><b>20 Years</b><span>Trusted Irish IT supplier</span></div></div>
       <div class="value-col"><svg viewBox="0 0 24 24"><path d="M4 9a8 8 0 0 1 13-4l3 3M20 15a8 8 0 0 1-13 4l-3-3"/><path d="M20 5v3h-3M4 19v-3h3"/></svg><div><b>Trade-in options</b><span>Value for old devices</span></div></div>
       <div class="value-col"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg><div><b>Flexible financing</b><span>Protect your cash flow</span></div></div>
       <div class="value-col"><svg viewBox="0 0 24 24"><path d="M5 13a7 7 0 0 1 14 0"/><rect x="3" y="13" width="4" height="6" rx="2"/><rect x="17" y="13" width="4" height="6" rx="2"/></svg><div><b>Expert support</b><span>Advice & after-sales</span></div></div>
@@ -237,7 +237,7 @@
   <!-- SEO INTRO / ABOUT -->
   <section class="sec wrap">
     <div class="seo-intro">
-      <h2>Your trusted IT partner in Ireland since 2007</h2>
+      <h2>Your trusted IT partner in Ireland for 20 years</h2>
       <p>Stacked IT supplies business laptops, desktops, monitors, servers, storage, networking and accessories from leading brands including Lenovo, HP and Dell. Whether you're replacing ageing equipment, expanding your team or standardising devices across your organisation, our specialists help you choose the right hardware and software for the job.</p>
       <p>Every order is backed by trade-in options, flexible business financing and expert after-sales support. Buy online or call <strong>0818 409 988</strong> to speak to our team about your IT requirements — from a single device to a full company refresh.</p>
     </div>
