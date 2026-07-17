@@ -1,41 +1,30 @@
 import type { Metadata, Viewport } from "next";
-import { Great_Vibes, Playfair_Display } from "next/font/google";
-import { COUPLE_NAME } from "@/lib/config";
+import { Inter } from "next/font/google";
+import { APP_NAME } from "@/lib/config";
+import { TopNav } from "@/components/TopNav";
 import "./globals.css";
 
-const greatVibes = Great_Vibes({
-  weight: "400",
-  subsets: ["latin"],
-  variable: "--font-script",
-  display: "swap",
-});
-
-const playfair = Playfair_Display({
-  weight: ["400", "500", "600", "700"],
-  subsets: ["latin"],
-  variable: "--font-body",
-  display: "swap",
-});
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 
 export const metadata: Metadata = {
-  title: `${COUPLE_NAME}'s Wedding`,
-  description: `Share your photos & videos from ${COUPLE_NAME}'s wedding`,
+  title: `${APP_NAME} — free SEO + CRM`,
+  description:
+    "A free, self-hosted marketing suite: SEO audits (SEMrush-lite) and a CRM (HubSpot-lite).",
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#6f7a4f",
+  themeColor: "#4f46e5",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${greatVibes.variable} ${playfair.variable}`}>
-      <body className="font-body antialiased">{children}</body>
+    <html lang="en" className={inter.variable}>
+      <body className="min-h-screen bg-slate-50 font-sans text-slate-800 antialiased">
+        <TopNav />
+        <main className="mx-auto w-full max-w-6xl px-4 py-8">{children}</main>
+      </body>
     </html>
   );
 }

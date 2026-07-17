@@ -1,80 +1,69 @@
 -- ============================================================================
---  Sarah & Lairkin's Wedding — Supabase schema + Row Level Security
+--  Free Marketing Suite — Supabase schema + Row Level Security
 --  Run this once in: Supabase Dashboard → SQL Editor → New query → Run.
---  (Create the public Storage bucket named "uploads" first.)
+--
+--  Security model: all reads/writes go through server-side API routes that use
+--  the service_role key (which bypasses RLS and never reaches the browser).
+--  RLS is enabled with NO anon policies, so the public anon key can touch
+--  nothing. (Add auth + policies later if you want per-user data.)
 -- ============================================================================
 
--- ---------------------------------------------------------------------------
--- Tables
--- ---------------------------------------------------------------------------
-create table if not exists public.uploads (
-  id           uuid primary key default gen_random_uuid(),
-  file_url     text not null,
-  file_type    text not null check (file_type in ('image', 'video')),
-  uploader_name text,
-  created_at   timestamptz not null default now()
+-- ── CRM (HubSpot-lite) ──────────────────────────────────────────────────────
+
+create table if not exists public.contacts (
+  id         uuid primary key default gen_random_uuid(),
+  name       text not null,
+  email      text,
+  company    text,
+  phone      text,
+  status     text not null default 'lead'
+             check (status in ('subscriber', 'lead', 'customer', 'churned')),
+  notes      text,
+  created_at timestamptz not null default now()
 );
 
-create table if not exists public.messages (
-  id          uuid primary key default gen_random_uuid(),
-  guest_name  text,
-  message     text not null,
-  created_at  timestamptz not null default now()
+create table if not exists public.deals (
+  id         uuid primary key default gen_random_uuid(),
+  title      text not null,
+  value      numeric not null default 0,
+  stage      text not null default 'lead'
+             check (stage in ('lead', 'qualified', 'proposal', 'won', 'lost')),
+  contact_id uuid references public.contacts (id) on delete set null,
+  created_at timestamptz not null default now()
 );
 
-create index if not exists uploads_created_at_idx
-  on public.uploads (created_at desc);
-create index if not exists messages_created_at_idx
-  on public.messages (created_at desc);
+create table if not exists public.activities (
+  id         uuid primary key default gen_random_uuid(),
+  contact_id uuid not null references public.contacts (id) on delete cascade,
+  type       text not null default 'note'
+             check (type in ('note', 'call', 'email', 'task')),
+  body       text not null,
+  created_at timestamptz not null default now()
+);
 
--- ---------------------------------------------------------------------------
--- Row Level Security
---   Anonymous guests may ONLY INSERT. They cannot SELECT, UPDATE or DELETE
---   through the API. The admin pages read this data server-side using the
---   service_role key, which bypasses RLS and is never sent to the browser.
--- ---------------------------------------------------------------------------
-alter table public.uploads  enable row level security;
-alter table public.messages enable row level security;
+-- ── SEO (SEMrush-lite) ───────────────────────────────────────────────────────
 
--- uploads: insert-only for anonymous (and logged-in) guests
-drop policy if exists "guests can insert uploads" on public.uploads;
-create policy "guests can insert uploads"
-  on public.uploads
-  for insert
-  to anon, authenticated
-  with check (true);
+create table if not exists public.seo_audits (
+  id         uuid primary key default gen_random_uuid(),
+  url        text not null,
+  score      integer not null default 0,
+  result     jsonb not null,
+  created_at timestamptz not null default now()
+);
 
--- messages: insert-only for anonymous (and logged-in) guests
-drop policy if exists "guests can insert messages" on public.messages;
-create policy "guests can insert messages"
-  on public.messages
-  for insert
-  to anon, authenticated
-  with check (true);
+-- ── Indexes ─────────────────────────────────────────────────────────────────
 
--- No SELECT / UPDATE / DELETE policies are defined for anon, so those
--- operations are denied by default. (service_role bypasses RLS entirely.)
+create index if not exists contacts_created_at_idx on public.contacts (created_at desc);
+create index if not exists deals_stage_idx          on public.deals (stage);
+create index if not exists activities_contact_idx   on public.activities (contact_id, created_at desc);
+create index if not exists seo_audits_created_at_idx on public.seo_audits (created_at desc);
 
--- ---------------------------------------------------------------------------
--- Storage policies for the "uploads" bucket
---   Allow anonymous guests to upload files (INSERT), and allow public read
---   so the gallery/slideshow can display media via public URLs. No update or
---   delete is granted to anonymous users.
--- ---------------------------------------------------------------------------
+-- ── Row Level Security (deny-all to anon; service_role bypasses) ─────────────
 
--- Public read of objects in the bucket (the bucket should also be marked
--- "Public" in the dashboard; this policy makes the intent explicit).
-drop policy if exists "public read uploads bucket" on storage.objects;
-create policy "public read uploads bucket"
-  on storage.objects
-  for select
-  to anon, authenticated
-  using (bucket_id = 'uploads');
+alter table public.contacts   enable row level security;
+alter table public.deals      enable row level security;
+alter table public.activities enable row level security;
+alter table public.seo_audits enable row level security;
 
--- Anonymous guests may upload into the bucket.
-drop policy if exists "guests can upload to uploads bucket" on storage.objects;
-create policy "guests can upload to uploads bucket"
-  on storage.objects
-  for insert
-  to anon, authenticated
-  with check (bucket_id = 'uploads');
+-- No policies are created for the anon role, so all anon access is denied by
+-- default. The server API routes use the service_role key and are unaffected.

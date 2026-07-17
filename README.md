@@ -1,64 +1,73 @@
-# Sarah & Lairkin's Wedding 💍
+# Free Marketing Suite 📈
 
-A self-hosted, Wedibox-style wedding photo & video sharing app. Guests scan a
-QR code, land on a mobile-friendly page, and upload photos and videos with **no
-login and no app install**. The couple gets a private gallery, a live slideshow
-to project at the reception, and a guestbook.
+A free, self-hosted marketing suite that covers the **basics** of two expensive
+SaaS products:
 
-Built with **Next.js (App Router, TypeScript)**, **Supabase** (storage +
-Postgres), **Tailwind CSS**, and deployed to **Vercel**. Runs on the free tier.
+- **SEO Tools (SEMrush-lite)** — on-page audit of any URL with a graded
+  checklist, page facts, optional Core Web Vitals, and free keyword ideas.
+- **CRM (HubSpot-lite)** — contacts with lifecycle status and an activity
+  timeline, plus a deal pipeline board.
+
+Built with **Next.js (App Router, TypeScript)**, **Supabase** (Postgres),
+**Tailwind CSS**, and deployed to **Vercel**. Runs entirely on free tiers.
+
+## Can you *really* clone SEMrush & HubSpot for free?
+
+Honest answer: **the software, yes — the data, no.**
+
+- **HubSpot** is mostly application software (contacts, deals, activity). That
+  part is very reproducible on a free stack, and that's what this app does.
+- **SEMrush's** real value is a proprietary index built from continuously
+  crawling billions of pages for keywords, search volume, difficulty, and
+  backlinks. That crawl costs millions/year and **cannot be sourced for free.**
+
+So this suite deliberately implements only what's genuinely free:
+
+| Feature | How it's free | Not included (needs paid data) |
+| --- | --- | --- |
+| On-page SEO audit | Server-side fetch + HTML parse | — |
+| Core Web Vitals | Google PageSpeed Insights API (free) | — |
+| Keyword ideas | Google Autocomplete (public) | search **volume**, difficulty |
+| Backlinks | — | requires a crawl index |
+| CRM | Supabase free tier | — |
 
 ## Pages
 
-| Route        | Who      | What                                                            |
-| ------------ | -------- | -------------------------------------------------------------- |
-| `/`          | Guests   | Upload photos/videos (multi-file, progress bars) + guestbook   |
-| `/gallery`   | Everyone | Grid of all media, lightbox, **Download all** (ZIP)            |
-| `/slideshow` | Everyone | Full-screen auto-advancing slideshow, refreshes every 20s     |
-| `/guestbook` | Everyone | All guest messages with names & timestamps                     |
-
-All pages are open to anyone with the link. Guests upload on `/`; the gallery,
-slideshow and guestbook are viewable by all (no password).
+| Route          | What                                                          |
+| -------------- | ------------------------------------------------------------ |
+| `/`            | Dashboard — pipeline value, contact count, avg SEO score     |
+| `/seo`         | Run an on-page audit + get keyword ideas                     |
+| `/crm`         | Contacts list, details, notes, and activity timeline         |
+| `/crm/deals`   | Deal pipeline board (Lead → Qualified → Proposal → Won/Lost) |
 
 ---
 
 ## 1. Set up Supabase
 
 1. Create a project at [supabase.com](https://supabase.com) (free).
-2. **Storage → Create bucket** → name it `uploads`, set it **Public**.
-3. **SQL Editor → New query** → paste the contents of
-   [`supabase/schema.sql`](./supabase/schema.sql) and **Run**. This creates the
-   `uploads` and `messages` tables and the Row Level Security policies
-   (guests can only *insert*, never read or delete others' data).
-4. **Project Settings → API** — copy these three values for the next step:
-   - **Project URL**
-   - **anon public** key
-   - **service_role** key (secret — keep it server-side only)
+2. **SQL Editor → New query** → paste [`supabase/schema.sql`](./supabase/schema.sql)
+   and **Run**. This creates the `contacts`, `deals`, `activities`, and
+   `seo_audits` tables with Row Level Security enabled (deny-all to the public
+   anon key; the server routes use the service_role key).
+3. **Project Settings → API** — copy the **Project URL**, **anon public** key,
+   and **service_role** key.
 
 ## 2. Configure environment variables
-
-Copy the example file and fill it in:
 
 ```bash
 cp .env.local.example .env.local
 ```
 
-```env
-NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-public-key
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-# optional
-NEXT_PUBLIC_COUPLE_NAME=Sarah & Lairkin
-NEXT_PUBLIC_MAX_UPLOAD_MB=
-```
+| Variable                        | Exposed to browser? | Purpose                                   |
+| ------------------------------- | ------------------- | ----------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Yes                 | Supabase project URL                      |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes                 | Present for completeness                  |
+| `SUPABASE_SERVICE_ROLE_KEY`     | **No (server only)**| All CRM/SEO reads & writes                |
+| `NEXT_PUBLIC_APP_NAME`          | Yes                 | App name in nav/title (optional)          |
+| `PAGESPEED_API_KEY`             | **No (server only)**| Higher PageSpeed rate limit (optional)    |
 
-| Variable                        | Exposed to browser? | Purpose                                  |
-| ------------------------------- | ------------------- | ---------------------------------------- |
-| `NEXT_PUBLIC_SUPABASE_URL`      | Yes                 | Guest uploads                            |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes                 | Guest uploads (insert-only via RLS)      |
-| `SUPABASE_SERVICE_ROLE_KEY`     | **No (server only)**| Gallery/slideshow list media/messages    |
-| `NEXT_PUBLIC_COUPLE_NAME`       | Yes                 | Heading text (optional)                  |
-| `NEXT_PUBLIC_MAX_UPLOAD_MB`     | Yes                 | Optional per-file size cap (optional)    |
+> The **SEO auditor works without Supabase** — you just won't get saved audit
+> history. The CRM needs the database.
 
 ## 3. Run locally
 
@@ -67,47 +76,31 @@ npm install
 npm run dev
 ```
 
-Open <http://localhost:3000>. To test from your **phone** on the same Wi-Fi,
-run `npm run dev -- -H 0.0.0.0` and visit `http://YOUR-COMPUTER-IP:3000`.
-
-Test checklist: upload a photo and a video, confirm they appear in `/gallery`,
-leave a guestbook message, open `/slideshow`.
+Open <http://localhost:3000>.
 
 ## 4. Deploy to Vercel
 
 1. Push this repo to GitHub.
 2. At [vercel.com](https://vercel.com) → **Add New → Project** → import the repo.
-3. Under **Environment Variables**, add the same variables from your
-   `.env.local` (Vercel does **not** read that file). Set them for Production
-   (and Preview if you like).
-4. **Deploy.** You get a public URL like `your-wedding.vercel.app`.
-
-> After changing env vars in Vercel, redeploy for them to take effect.
-
-## 5. QR code & sign
-
-Generate a QR code pointing at your Vercel URL (e.g.
-[qrcode-monkey.com](https://www.qrcode-monkey.com) — use a *dynamic* QR so you
-can re-point it later without reprinting). Print it on your table sign.
+3. Add the same environment variables under **Settings → Environment Variables**.
+4. **Deploy.**
 
 ---
 
 ## Security model
 
-- **Guests** use only the **anon key** in the browser. RLS allows that key to
-  *insert* into `uploads`/`messages` and to *upload* to the storage bucket —
-  nothing else. They cannot read or delete other guests' data via the API.
-- **Media bytes** are served from the **public storage bucket** via public
-  URLs (no key needed).
-- **The gallery, slideshow and guestbook are open to anyone with the link.**
-  They list data through server-side API routes that use the **service_role
-  key**, which never reaches the browser. (To make them private again, add an
-  auth gate — there's no password by default.)
+- All CRM and SEO data flows through **server-side API routes** (`/api/*`) that
+  use the **service_role key**, which never reaches the browser.
+- RLS is **enabled with no anon policies**, so the public anon key can't read or
+  write anything directly.
+- This app has **no auth/login** — anyone with the URL can use the CRM. For real
+  use, put it behind Vercel password protection or add Supabase Auth + per-user
+  RLS policies before storing real customer data.
 
-## Free-tier notes
+## Notes on limits
 
-Supabase free tier ≈ **1 GB storage + 5 GB bandwidth**. A wedding with lots of
-HD video can exceed this. Options: set `NEXT_PUBLIC_MAX_UPLOAD_MB` (e.g. `25`)
-to cap file sizes, restrict to photos, download + clear partway through, or
-upgrade Supabase for the month. After the wedding, open `/gallery → Download
-all` and back up the ZIP in two places.
+- The SEO auditor fetches pages server-side; some sites block bots or time out
+  (12s limit) — that's reported, not a crash.
+- Keyword ideas come from autocomplete and are related queries, **not** volume.
+- Supabase free tier is generous for a CRM (500 MB Postgres); you'll hit no
+  meaningful limits for typical small-team use.
