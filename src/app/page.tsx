@@ -1,63 +1,45 @@
-import GuestExperience from "@/components/GuestExperience";
-import { COUPLE_NAME } from "@/lib/config";
 import Link from "next/link";
+import { TRENDS, CATEGORIES, allDupes } from "@/lib/data";
+import { TrendExplorer } from "@/components/TrendExplorer";
 
 export default function HomePage() {
+  const dupeCount = allDupes().length;
+  const topTrend = [...TRENDS].sort((a, b) => b.heat - a.heat)[0];
+
   return (
-    <main className="min-h-screen bg-cream px-5 py-10">
-      <div className="mx-auto w-full max-w-xl">
-        <header className="mb-8 text-center">
-          <p className="font-body text-sm uppercase tracking-[0.3em] text-blush">
-            Welcome to the wedding of
-          </p>
-          <h1 className="mt-3 py-2 font-script text-6xl leading-[1.35] text-sage-dark sm:text-7xl">
-            {COUPLE_NAME}
-          </h1>
-          <div className="mx-auto mt-4 flex items-center justify-center gap-3 text-sage/70">
-            <span className="h-px w-12 bg-sage/40" />
-            <span className="text-xl">❀</span>
-            <span className="h-px w-12 bg-sage/40" />
-          </div>
-          <p className="mt-5 text-lg text-stone-600">
-            Share the moments you capture today. Upload your photos and videos
-            below. Thank you for celebrating with us. ♥
-          </p>
-        </header>
+    <div>
+      {/* Hero */}
+      <section className="mx-auto max-w-6xl px-5 pb-10 pt-12 sm:pt-16">
+        <p className="inline-flex items-center gap-2 rounded-full border border-line bg-white px-3 py-1 text-xs font-medium text-ink/60">
+          <span className="text-rose">●</span> {TRENDS.length} live trends ·{" "}
+          {dupeCount} dupes tracked
+        </p>
+        <h1 className="mt-4 max-w-3xl font-display text-4xl font-semibold leading-[1.05] sm:text-6xl">
+          What&apos;s trending in fashion —{" "}
+          <span className="text-rose">and how to get it for less.</span>
+        </h1>
+        <p className="mt-4 max-w-xl text-base text-ink/60 sm:text-lg">
+          Trendr tracks the aesthetics blowing up right now, then finds the
+          best-value dupes for every piece. Compare prices, save favourites,
+          and shop the retailer directly.
+        </p>
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Link
+            href="#explore"
+            className="rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-rose"
+          >
+            Explore trends
+          </Link>
+          <Link
+            href={`/trends/${topTrend.slug}`}
+            className="rounded-full border border-line bg-white px-5 py-2.5 text-sm font-semibold transition hover:border-ink/30"
+          >
+            🔥 Hottest: {topTrend.title}
+          </Link>
+        </div>
+      </section>
 
-        <section className="rounded-3xl bg-white/40 p-6 shadow-sm ring-1 ring-sage/10 sm:p-8">
-          <GuestExperience />
-        </section>
-
-        <section className="mt-8 text-center">
-          <p className="mb-4 text-lg text-sage-dark">
-            Already shared? Take a look 💕
-          </p>
-          <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-            <Link
-              href="/gallery"
-              className="rounded-full bg-sage px-7 py-4 text-lg text-cream shadow-sm transition-colors hover:bg-sage-dark"
-            >
-              🖼️ View gallery
-            </Link>
-            <Link
-              href="/slideshow"
-              className="rounded-full bg-blush px-7 py-4 text-lg text-cream shadow-sm transition-colors hover:bg-blush-dark"
-            >
-              📽️ Slideshow
-            </Link>
-            <Link
-              href="/guestbook"
-              className="rounded-full border-2 border-sage px-7 py-4 text-lg text-sage-dark transition-colors hover:bg-sage/10"
-            >
-              💌 Guestbook
-            </Link>
-          </div>
-        </section>
-
-        <footer className="mt-10 text-center text-sm text-stone-400">
-          Made with love for {COUPLE_NAME}
-        </footer>
-      </div>
-    </main>
+      <TrendExplorer trends={TRENDS} categories={CATEGORIES} />
+    </div>
   );
 }

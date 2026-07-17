@@ -1,113 +1,68 @@
-# Sarah & Lairkin's Wedding 💍
+# Trendr — fashion trends & dupes
 
-A self-hosted, Wedibox-style wedding photo & video sharing app. Guests scan a
-QR code, land on a mobile-friendly page, and upload photos and videos with **no
-login and no app install**. The couple gets a private gallery, a live slideshow
-to project at the reception, and a guestbook.
+Discover what's trending in fashion, find the best-value **dupes** for every
+piece (with prices and match scores), **save** favourites to a wishlist, and
+**buy** straight from the retailer.
 
-Built with **Next.js (App Router, TypeScript)**, **Supabase** (storage +
-Postgres), **Tailwind CSS**, and deployed to **Vercel**. Runs on the free tier.
+Built with Next.js (App Router) + TypeScript + Tailwind CSS. No backend, no
+login — the wishlist lives in the browser via `localStorage`, so the whole app
+is static and deploys anywhere.
 
-## Pages
+## What's in it
 
-| Route        | Who      | What                                                            |
-| ------------ | -------- | -------------------------------------------------------------- |
-| `/`          | Guests   | Upload photos/videos (multi-file, progress bars) + guestbook   |
-| `/gallery`   | Everyone | Grid of all media, lightbox, **Download all** (ZIP)            |
-| `/slideshow` | Everyone | Full-screen auto-advancing slideshow, refreshes every 20s     |
-| `/guestbook` | Everyone | All guest messages with names & timestamps                     |
+- **Trends feed** (`/`) — every trend as a card with a live "heat" score,
+  category, tags and how much you can save. Search, filter by category, and
+  sort by hottest / biggest savings / A–Z.
+- **Trend detail** (`/trends/[slug]`) — the story behind a trend plus each
+  key piece, its original (designer) price, and a ranked list of dupes.
+- **All dupes** (`/dupes`) — every dupe in one place, filter by retailer or
+  budget (under $25 / $50 / $100), sort by match or price.
+- **Wishlist** (`/wishlist`) — everything you've saved, with the total cost to
+  buy them all and one-tap Buy links.
 
-All pages are open to anyone with the link. Guests upload on `/`; the gallery,
-slideshow and guestbook are viewable by all (no password).
+Every "Buy" button opens the retailer's own site (ASOS, Amazon, Zara, H&M,
+Mango, SHEIN, Nordstrom, Abercrombie …). Trendr doesn't sell or ship anything.
 
----
-
-## 1. Set up Supabase
-
-1. Create a project at [supabase.com](https://supabase.com) (free).
-2. **Storage → Create bucket** → name it `uploads`, set it **Public**.
-3. **SQL Editor → New query** → paste the contents of
-   [`supabase/schema.sql`](./supabase/schema.sql) and **Run**. This creates the
-   `uploads` and `messages` tables and the Row Level Security policies
-   (guests can only *insert*, never read or delete others' data).
-4. **Project Settings → API** — copy these three values for the next step:
-   - **Project URL**
-   - **anon public** key
-   - **service_role** key (secret — keep it server-side only)
-
-## 2. Configure environment variables
-
-Copy the example file and fill it in:
-
-```bash
-cp .env.local.example .env.local
-```
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-public-key
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-# optional
-NEXT_PUBLIC_COUPLE_NAME=Sarah & Lairkin
-NEXT_PUBLIC_MAX_UPLOAD_MB=
-```
-
-| Variable                        | Exposed to browser? | Purpose                                  |
-| ------------------------------- | ------------------- | ---------------------------------------- |
-| `NEXT_PUBLIC_SUPABASE_URL`      | Yes                 | Guest uploads                            |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes                 | Guest uploads (insert-only via RLS)      |
-| `SUPABASE_SERVICE_ROLE_KEY`     | **No (server only)**| Gallery/slideshow list media/messages    |
-| `NEXT_PUBLIC_COUPLE_NAME`       | Yes                 | Heading text (optional)                  |
-| `NEXT_PUBLIC_MAX_UPLOAD_MB`     | Yes                 | Optional per-file size cap (optional)    |
-
-## 3. Run locally
+## Run it
 
 ```bash
 npm install
-npm run dev
+npm run dev      # http://localhost:3000
 ```
 
-Open <http://localhost:3000>. To test from your **phone** on the same Wi-Fi,
-run `npm run dev -- -H 0.0.0.0` and visit `http://YOUR-COMPUTER-IP:3000`.
+```bash
+npm run build && npm run start   # production build
+```
 
-Test checklist: upload a photo and a video, confirm they appear in `/gallery`,
-leave a guestbook message, open `/slideshow`.
+## The data
 
-## 4. Deploy to Vercel
+All trends and dupes are curated seed data in **`src/lib/data.ts`** — edit that
+one file to add trends, pieces, or dupes; the types live in
+`src/lib/types.ts`. Prices are indicative (USD) and each Buy link points at the
+retailer's search page for the item, so links keep working as products sell
+out.
 
-1. Push this repo to GitHub.
-2. At [vercel.com](https://vercel.com) → **Add New → Project** → import the repo.
-3. Under **Environment Variables**, add the same variables from your
-   `.env.local` (Vercel does **not** read that file). Set them for Production
-   (and Preview if you like).
-4. **Deploy.** You get a public URL like `your-wedding.vercel.app`.
+### Where to take it next
 
-> After changing env vars in Vercel, redeploy for them to take effect.
+- Swap the gradient thumbnails (`src/components/Thumb.tsx`) for real product
+  photos.
+- Replace the static dataset with a live feed / affiliate API and turn the
+  Buy links into affiliate links.
+- Add accounts (e.g. Supabase) to sync the wishlist across devices — the app
+  was scaffolded from a Supabase-ready setup, so the wiring is straightforward.
 
-## 5. QR code & sign
+## Structure
 
-Generate a QR code pointing at your Vercel URL (e.g.
-[qrcode-monkey.com](https://www.qrcode-monkey.com) — use a *dynamic* QR so you
-can re-point it later without reprinting). Print it on your table sign.
-
----
-
-## Security model
-
-- **Guests** use only the **anon key** in the browser. RLS allows that key to
-  *insert* into `uploads`/`messages` and to *upload* to the storage bucket —
-  nothing else. They cannot read or delete other guests' data via the API.
-- **Media bytes** are served from the **public storage bucket** via public
-  URLs (no key needed).
-- **The gallery, slideshow and guestbook are open to anyone with the link.**
-  They list data through server-side API routes that use the **service_role
-  key**, which never reaches the browser. (To make them private again, add an
-  auth gate — there's no password by default.)
-
-## Free-tier notes
-
-Supabase free tier ≈ **1 GB storage + 5 GB bandwidth**. A wedding with lots of
-HD video can exceed this. Options: set `NEXT_PUBLIC_MAX_UPLOAD_MB` (e.g. `25`)
-to cap file sizes, restrict to photos, download + clear partway through, or
-upgrade Supabase for the month. After the wedding, open `/gallery → Download
-all` and back up the ZIP in two places.
+```
+src/
+  app/
+    page.tsx                 # home / trends feed
+    trends/[slug]/page.tsx   # trend detail
+    dupes/page.tsx           # all dupes browser
+    wishlist/page.tsx        # saved dupes
+  components/                # Nav, cards, filters, wishlist context
+  lib/
+    data.ts                  # curated trends + dupes  ← edit here
+    types.ts                 # data model
+    format.ts                # money / savings helpers
+```

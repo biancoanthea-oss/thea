@@ -8,24 +8,25 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        sage: "#6f7a4f",
-        "sage-dark": "#5a6440",
-        blush: "#cf857d",
-        "blush-dark": "#b96e66",
-        cream: "#f6efe2",
+        ink: "#1c1815",
+        paper: "#faf7f2",
+        line: "#e8e2d8",
+        rose: "#d23f57",
+        "rose-dark": "#b32f45",
+        gold: "#b8873a",
       },
       fontFamily: {
-        script: ["var(--font-script)", "cursive"],
-        body: ["var(--font-body)", "serif"],
+        display: ["var(--font-display)", "serif"],
+        body: ["var(--font-body)", "system-ui", "sans-serif"],
       },
       keyframes: {
         fadeIn: {
-          "0%": { opacity: "0" },
-          "100%": { opacity: "1" },
+          "0%": { opacity: "0", transform: "translateY(6px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
         },
       },
       animation: {
-        fadeIn: "fadeIn 1.2s ease-in-out",
+        fadeIn: "fadeIn 0.5s ease-out",
       },
     },
   },

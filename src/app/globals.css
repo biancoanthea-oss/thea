@@ -7,11 +7,12 @@
 }
 
 body {
-  background-color: #f6efe2;
-  color: #3d3a33;
+  background-color: theme("colors.paper");
+  color: theme("colors.ink");
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Hide scrollbar on the slideshow for a clean projected look */
+/* Hide scrollbars on horizontal scrollers */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
