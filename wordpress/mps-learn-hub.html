@@ -24,6 +24,36 @@
 -->
 
 <style>
+  /* ── FONT: Gotham Round ────────────────────────────────────────────────
+     Gotham Rounded is a licensed Hoefler&Co font, so it must be served from
+     YOUR site. Two ways — you only need one:
+
+     A) Your site already loads Gotham Rounded (Cloud.typography / self-host).
+        Nothing to do — the local() lookups below pick it up automatically.
+
+     B) Self-host your licensed files: upload the .woff2 files to
+        /wp-content/uploads/fonts/ and uncomment the url() lines below.
+
+     Until the real font is present it falls back to a geometric sans. */
+  @font-face {
+    font-family: "Gotham Rounded";
+    font-weight: 400; font-style: normal; font-display: swap;
+    src: local("Gotham Rounded Book"), local("GothamRounded-Book"), local("Gotham Rounded");
+    /* , url("/wp-content/uploads/fonts/GothamRounded-Book.woff2") format("woff2") */
+  }
+  @font-face {
+    font-family: "Gotham Rounded";
+    font-weight: 500; font-style: normal; font-display: swap;
+    src: local("Gotham Rounded Medium"), local("GothamRounded-Medium");
+    /* , url("/wp-content/uploads/fonts/GothamRounded-Medium.woff2") format("woff2") */
+  }
+  @font-face {
+    font-family: "Gotham Rounded";
+    font-weight: 700; font-style: normal; font-display: swap;
+    src: local("Gotham Rounded Bold"), local("GothamRounded-Bold");
+    /* , url("/wp-content/uploads/fonts/GothamRounded-Bold.woff2") format("woff2") */
+  }
+
   /* All rules are scoped under .mps-learn-hub so they never touch your theme. */
   .mps-learn-hub {
     --mps-orange: #EE7623;
@@ -35,8 +65,11 @@
     --mps-grey: #616365;     /* brand logo grey */
     --mps-white: #ffffff;
     --mps-muted: #b9bbbc;
-    --mps-font: "Gotham Rounded", "Gotham Round", "Gotham", "Montserrat",
-                "Century Gothic", "Helvetica Neue", Arial, sans-serif;
+    /* Gotham Rounded first (all common family-name variants), then a
+       geometric fallback so it degrades gracefully. */
+    --mps-font: "Gotham Rounded", "Gotham Rounded A", "Gotham Rounded B",
+                "Gotham Round", "Gotham", "Montserrat", "Century Gothic",
+                "Helvetica Neue", Arial, sans-serif;
 
     box-sizing: border-box;
     background: var(--mps-ground);
@@ -117,6 +150,15 @@
     background-position: center;
     transition: transform 0.25s ease, box-shadow 0.25s ease;
   }
+  /* Once a real video thumbnail is loaded, drop the placeholder tint and marks. */
+  .mps-card__play.has-thumb {
+    background-image:
+      linear-gradient(rgba(0,0,0,0.05), rgba(0,0,0,0.12)),
+      var(--thumb, none);
+  }
+  .mps-card__play.has-thumb .mps-card__label,
+  .mps-card__play.has-thumb .mps-card__badge { display: none; }
+
   .mps-card__play:hover,
   .mps-card__play:focus-visible {
     transform: translateY(-3px);
@@ -246,17 +288,22 @@
 
     <div class="mps-hub__grid">
 
-      <!-- ── CARD 1 ─────────────────────────────────────────────────────
-           • Real thumbnail:  style="--thumb:url('YOUR-IMAGE-URL')"
-           • Real video:      data-embed="https://www.youtube.com/embed/ID" -->
-      <figure class="mps-card" style="--thumb: none">
-        <figcaption class="mps-card__title">Hikvision 5th Generation Poster LED — Unboxing &amp; Tutorial</figcaption>
+      <!-- ── HOW TO ADD A VIDEO ─────────────────────────────────────────
+           Just paste the YouTube link (or the 11-char video ID) into
+           data-yt="…". The script auto-fills BOTH the thumbnail and the
+           player — no separate image upload needed.
+           e.g. data-yt="https://youtu.be/dQw4w9WgXcQ"  or  data-yt="dQw4w9WgXcQ"
+           (Prefer a custom thumbnail? Add style="--thumb:url('IMAGE-URL')".) -->
+
+      <!-- ── CARD 1 ────────────────────────────────────────────────────── -->
+      <figure class="mps-card">
+        <figcaption class="mps-card__title">Fixing a Paper Jam — HP E786 Gemstone</figcaption>
         <button class="mps-card__play" type="button"
-                data-embed=""
-                data-title="Hikvision 5th Generation Poster LED — Unboxing &amp; Tutorial"
-                aria-label="Play: Hikvision 5th Generation Poster LED — Unboxing and Tutorial">
+                data-yt=""
+                data-title="Fixing a Paper Jam — HP E786 Gemstone"
+                aria-label="Play: Fixing a Paper Jam, HP E786 Gemstone">
           <span class="mps-card__badge" aria-hidden="true">S</span>
-          <span class="mps-card__label" aria-hidden="true"><small>Unboxing &amp; Tutorial</small>Hikvision 5th Gen Poster LED</span>
+          <span class="mps-card__label" aria-hidden="true"><small>MPS</small>Fixing a Paper Jam · HP E786 Gemstone</span>
           <span class="mps-card__ring" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
           </span>
@@ -264,29 +311,14 @@
       </figure>
 
       <!-- ── CARD 2 ────────────────────────────────────────────────────── -->
-      <figure class="mps-card" style="--thumb: none">
-        <figcaption class="mps-card__title">Poly E60 — Unboxing</figcaption>
+      <figure class="mps-card">
+        <figcaption class="mps-card__title">Supply Levels — HP A3 Photocopier</figcaption>
         <button class="mps-card__play" type="button"
-                data-embed=""
-                data-title="Poly E60 — Unboxing"
-                aria-label="Play: Poly E60 Unboxing">
+                data-yt=""
+                data-title="Supply Levels — HP A3 Photocopier"
+                aria-label="Play: Supply Levels, HP A3 Photocopier">
           <span class="mps-card__badge" aria-hidden="true">S</span>
-          <span class="mps-card__label" aria-hidden="true"><small>Unboxing</small>Poly E60</span>
-          <span class="mps-card__ring" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-          </span>
-        </button>
-      </figure>
-
-      <!-- ── CARD 3 ────────────────────────────────────────────────────── -->
-      <figure class="mps-card" style="--thumb: none">
-        <figcaption class="mps-card__title">Logitech Tap Scheduler — Microsoft Teams — Tutorial</figcaption>
-        <button class="mps-card__play" type="button"
-                data-embed=""
-                data-title="Logitech Tap Scheduler — Microsoft Teams — Tutorial"
-                aria-label="Play: Logitech Tap Scheduler, Microsoft Teams Tutorial">
-          <span class="mps-card__badge" aria-hidden="true">S</span>
-          <span class="mps-card__label" aria-hidden="true"><small>Microsoft Teams Tutorial</small>Logitech Tap Scheduler</span>
+          <span class="mps-card__label" aria-hidden="true"><small>MPS</small>Supply Levels · HP A3 Photocopier</span>
           <span class="mps-card__ring" aria-hidden="true">
             <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
           </span>
@@ -317,6 +349,38 @@
   var body = hub.querySelector(".mps-modal__body");
   var closeBtn = hub.querySelector(".mps-modal__close");
   var lastFocused = null;
+
+  // Pull the 11-char video ID out of a full YouTube URL or a bare ID.
+  function youTubeId(value) {
+    if (!value) return "";
+    value = value.trim();
+    var m = value.match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/);
+    if (m) return m[1];
+    if (/^[\w-]{11}$/.test(value)) return value;   // already an ID
+    return "";
+  }
+
+  // For each card with data-yt, auto-fill the thumbnail + embed URL.
+  hub.querySelectorAll(".mps-card__play[data-yt]").forEach(function (btn) {
+    var id = youTubeId(btn.getAttribute("data-yt"));
+    if (!id) return;
+    btn.setAttribute("data-embed", "https://www.youtube.com/embed/" + id);
+    var figure = btn.closest(".mps-card");
+    // Use the widescreen maxres thumb; fall back to hqdefault if it's missing.
+    var probe = new Image();
+    probe.onload = function () {
+      var url = probe.naturalWidth > 120
+        ? "https://i.ytimg.com/vi/" + id + "/maxresdefault.jpg"
+        : "https://i.ytimg.com/vi/" + id + "/hqdefault.jpg";
+      figure.style.setProperty("--thumb", "url('" + url + "')");
+      btn.classList.add("has-thumb");
+    };
+    probe.onerror = function () {
+      figure.style.setProperty("--thumb", "url('https://i.ytimg.com/vi/" + id + "/hqdefault.jpg')");
+      btn.classList.add("has-thumb");
+    };
+    probe.src = "https://i.ytimg.com/vi/" + id + "/maxresdefault.jpg";
+  });
 
   function openModal(embed, title) {
     lastFocused = document.activeElement;
