@@ -1,63 +1,76 @@
-import GuestExperience from "@/components/GuestExperience";
-import { COUPLE_NAME } from "@/lib/config";
-import Link from "next/link";
+"use client";
 
-export default function HomePage() {
+import { useEffect, useState } from "react";
+import Analyzer from "@/components/Analyzer";
+import Checklist from "@/components/Checklist";
+import Workflow from "@/components/Workflow";
+
+const TABS = [
+  { id: "analyzer", label: "Analyzer" },
+  { id: "checklist", label: "Audit checklist" },
+  { id: "workflow", label: "Weekly workflow" },
+] as const;
+
+type TabId = (typeof TABS)[number]["id"];
+
+const SITE_KEY = "marketing-skills-site";
+
+export default function Home() {
+  const [tab, setTab] = useState<TabId>("analyzer");
+  const [site, setSite] = useState("");
+
+  useEffect(() => {
+    const saved = localStorage.getItem(SITE_KEY);
+    if (saved) setSite(saved);
+  }, []);
+
+  function updateSite(value: string) {
+    setSite(value);
+    localStorage.setItem(SITE_KEY, value);
+  }
+
   return (
-    <main className="min-h-screen bg-cream px-5 py-10">
-      <div className="mx-auto w-full max-w-xl">
-        <header className="mb-8 text-center">
-          <p className="font-body text-sm uppercase tracking-[0.3em] text-blush">
-            Welcome to the wedding of
-          </p>
-          <h1 className="mt-3 py-2 font-script text-6xl leading-[1.35] text-sage-dark sm:text-7xl">
-            {COUPLE_NAME}
-          </h1>
-          <div className="mx-auto mt-4 flex items-center justify-center gap-3 text-sage/70">
-            <span className="h-px w-12 bg-sage/40" />
-            <span className="text-xl">❀</span>
-            <span className="h-px w-12 bg-sage/40" />
-          </div>
-          <p className="mt-5 text-lg text-stone-600">
-            Share the moments you capture today. Upload your photos and videos
-            below. Thank you for celebrating with us. ♥
-          </p>
-        </header>
+    <main className="mx-auto min-h-screen max-w-4xl px-4 py-8 sm:px-6">
+      <header className="mb-8">
+        <h1 className="text-2xl font-bold text-slate-100 sm:text-3xl">Marketing Skills</h1>
+        <p className="mt-1 text-sm text-slate-400">
+          Search Console analyzer + prompt generator + SEO/AEO audit. All in your browser — no data
+          leaves this page.
+        </p>
+        <div className="mt-4 flex max-w-md items-center gap-2">
+          <label htmlFor="site" className="shrink-0 text-sm text-slate-400">
+            Your site
+          </label>
+          <input
+            id="site"
+            type="text"
+            value={site}
+            onChange={(e) => updateSite(e.target.value)}
+            placeholder="e.g. agensi.io"
+            className="w-full rounded-lg border border-slate-700 bg-slate-900/60 px-3 py-1.5 text-sm text-slate-100 placeholder-slate-600 outline-none transition-colors focus:border-indigo-500"
+          />
+        </div>
+      </header>
 
-        <section className="rounded-3xl bg-white/40 p-6 shadow-sm ring-1 ring-sage/10 sm:p-8">
-          <GuestExperience />
-        </section>
+      <nav className="mb-6 flex flex-wrap gap-2">
+        {TABS.map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setTab(t.id)}
+            className={`rounded-xl px-4 py-2 text-sm font-semibold transition-colors ${
+              tab === t.id
+                ? "bg-indigo-500 text-white"
+                : "bg-slate-900/60 text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </nav>
 
-        <section className="mt-8 text-center">
-          <p className="mb-4 text-lg text-sage-dark">
-            Already shared? Take a look 💕
-          </p>
-          <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-            <Link
-              href="/gallery"
-              className="rounded-full bg-sage px-7 py-4 text-lg text-cream shadow-sm transition-colors hover:bg-sage-dark"
-            >
-              🖼️ View gallery
-            </Link>
-            <Link
-              href="/slideshow"
-              className="rounded-full bg-blush px-7 py-4 text-lg text-cream shadow-sm transition-colors hover:bg-blush-dark"
-            >
-              📽️ Slideshow
-            </Link>
-            <Link
-              href="/guestbook"
-              className="rounded-full border-2 border-sage px-7 py-4 text-lg text-sage-dark transition-colors hover:bg-sage/10"
-            >
-              💌 Guestbook
-            </Link>
-          </div>
-        </section>
-
-        <footer className="mt-10 text-center text-sm text-stone-400">
-          Made with love for {COUPLE_NAME}
-        </footer>
-      </div>
+      {tab === "analyzer" && <Analyzer site={site} />}
+      {tab === "checklist" && <Checklist />}
+      {tab === "workflow" && <Workflow />}
     </main>
   );
 }

@@ -1,113 +1,62 @@
-# Sarah & Lairkin's Wedding 💍
+# Marketing Skills 📈
 
-A self-hosted, Wedibox-style wedding photo & video sharing app. Guests scan a
-QR code, land on a mobile-friendly page, and upload photos and videos with **no
-login and no app install**. The couple gets a private gallery, a live slideshow
-to project at the reception, and a guestbook.
+A self-hosted toolkit for the weekly AI-powered SEO workflow: export your
+Google Search Console data, drop it in, get instant findings, and copy
+ready-to-paste **Claude** prompts (for analysis and content) and
+**Lovable**-ready fix instructions (for shipping the changes same-day).
 
-Built with **Next.js (App Router, TypeScript)**, **Supabase** (storage +
-Postgres), **Tailwind CSS**, and deployed to **Vercel**. Runs on the free tier.
+Built with **Next.js (App Router, TypeScript)** and **Tailwind CSS**.
+100% client-side — your Search Console data never leaves the browser.
+No database, no API keys, no accounts. Deploys to Vercel free tier.
 
-## Pages
+## What it does
 
-| Route        | Who      | What                                                            |
-| ------------ | -------- | -------------------------------------------------------------- |
-| `/`          | Guests   | Upload photos/videos (multi-file, progress bars) + guestbook   |
-| `/gallery`   | Everyone | Grid of all media, lightbox, **Download all** (ZIP)            |
-| `/slideshow` | Everyone | Full-screen auto-advancing slideshow, refreshes every 20s     |
-| `/guestbook` | Everyone | All guest messages with names & timestamps                     |
+### 1. Analyzer
 
-All pages are open to anyone with the link. Guests upload on `/`; the gallery,
-slideshow and guestbook are viewable by all (no password).
+Upload the standard Search Console CSV export (**Performance → Export →
+CSV**, either `Queries.csv` or `Pages.csv`) and get:
 
----
+| Finding | What it means | Prompt you get |
+| --- | --- | --- |
+| **Content gaps** | Real demand (≥100 impressions) with ≤1 click and position >8 — nothing of yours ranks | Full article brief: title tag, meta, FAQ, JSON-LD, screenshot markers |
+| **Striking distance** | Position 4–15 with real impressions — a small push reaches page 1 | On-page action plan + internal-linking targets + Lovable prompt |
+| **CTR underperformers** | Top-10 ranking but CTR far below the position's expected curve | Title/meta rewrite with 3 title + 2 meta options + Lovable prompt |
+| **Cannibalization** | One query served by multiple pages (needs a query+page export from the GSC API or Looker Studio) | Consolidation plan: winner, redirects/canonicals, merge list |
+| **Top performers** | Your best pages — protect and refresh before they slip | — |
 
-## 1. Set up Supabase
+Plus a one-click **weekly analysis prompt** that packages the entire
+export summary for Claude to prioritize.
 
-1. Create a project at [supabase.com](https://supabase.com) (free).
-2. **Storage → Create bucket** → name it `uploads`, set it **Public**.
-3. **SQL Editor → New query** → paste the contents of
-   [`supabase/schema.sql`](./supabase/schema.sql) and **Run**. This creates the
-   `uploads` and `messages` tables and the Row Level Security policies
-   (guests can only *insert*, never read or delete others' data).
-4. **Project Settings → API** — copy these three values for the next step:
-   - **Project URL**
-   - **anon public** key
-   - **service_role** key (secret — keep it server-side only)
+### 2. Audit checklist
 
-## 2. Configure environment variables
+24-point SEO + AEO audit across Technical, On-page, Content, and
+**AI Engine Optimization** (the stuff that gets ChatGPT, Gemini,
+Perplexity — and Claude — citing your site organically). Progress is
+saved in your browser.
 
-Copy the example file and fill it in:
+### 3. Weekly workflow
 
-```bash
-cp .env.local.example .env.local
-```
+The full routine documented step by step: export → analyze → ask Claude
+→ ship via Lovable → draft content → close the loop.
 
-```env
-NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-public-key
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-# optional
-NEXT_PUBLIC_COUPLE_NAME=Sarah & Lairkin
-NEXT_PUBLIC_MAX_UPLOAD_MB=
-```
-
-| Variable                        | Exposed to browser? | Purpose                                  |
-| ------------------------------- | ------------------- | ---------------------------------------- |
-| `NEXT_PUBLIC_SUPABASE_URL`      | Yes                 | Guest uploads                            |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes                 | Guest uploads (insert-only via RLS)      |
-| `SUPABASE_SERVICE_ROLE_KEY`     | **No (server only)**| Gallery/slideshow list media/messages    |
-| `NEXT_PUBLIC_COUPLE_NAME`       | Yes                 | Heading text (optional)                  |
-| `NEXT_PUBLIC_MAX_UPLOAD_MB`     | Yes                 | Optional per-file size cap (optional)    |
-
-## 3. Run locally
+## Run locally
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open <http://localhost:3000>. To test from your **phone** on the same Wi-Fi,
-run `npm run dev -- -H 0.0.0.0` and visit `http://YOUR-COMPUTER-IP:3000`.
+Open <http://localhost:3000>, set your site domain (it's baked into every
+generated prompt), and drop in a CSV.
 
-Test checklist: upload a photo and a video, confirm they appear in `/gallery`,
-leave a guestbook message, open `/slideshow`.
-
-## 4. Deploy to Vercel
+## Deploy to Vercel
 
 1. Push this repo to GitHub.
-2. At [vercel.com](https://vercel.com) → **Add New → Project** → import the repo.
-3. Under **Environment Variables**, add the same variables from your
-   `.env.local` (Vercel does **not** read that file). Set them for Production
-   (and Preview if you like).
-4. **Deploy.** You get a public URL like `your-wedding.vercel.app`.
+2. [vercel.com](https://vercel.com) → **Add New → Project** → import the repo.
+3. **Deploy.** No environment variables needed.
 
-> After changing env vars in Vercel, redeploy for them to take effect.
+## Privacy
 
-## 5. QR code & sign
-
-Generate a QR code pointing at your Vercel URL (e.g.
-[qrcode-monkey.com](https://www.qrcode-monkey.com) — use a *dynamic* QR so you
-can re-point it later without reprinting). Print it on your table sign.
-
----
-
-## Security model
-
-- **Guests** use only the **anon key** in the browser. RLS allows that key to
-  *insert* into `uploads`/`messages` and to *upload* to the storage bucket —
-  nothing else. They cannot read or delete other guests' data via the API.
-- **Media bytes** are served from the **public storage bucket** via public
-  URLs (no key needed).
-- **The gallery, slideshow and guestbook are open to anyone with the link.**
-  They list data through server-side API routes that use the **service_role
-  key**, which never reaches the browser. (To make them private again, add an
-  auth gate — there's no password by default.)
-
-## Free-tier notes
-
-Supabase free tier ≈ **1 GB storage + 5 GB bandwidth**. A wedding with lots of
-HD video can exceed this. Options: set `NEXT_PUBLIC_MAX_UPLOAD_MB` (e.g. `25`)
-to cap file sizes, restrict to photos, download + clear partway through, or
-upgrade Supabase for the month. After the wedding, open `/gallery → Download
-all` and back up the ZIP in two places.
+Everything runs in the browser. The CSV is parsed with JavaScript on your
+machine; nothing is uploaded to any server. The site name and checklist
+state live in `localStorage` only.

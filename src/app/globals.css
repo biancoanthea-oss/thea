@@ -3,19 +3,10 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 }
 
 body {
-  background-color: #f6efe2;
-  color: #3d3a33;
-}
-
-/* Hide scrollbar on the slideshow for a clean projected look */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  background-color: #0f172a;
+  color: #e2e8f0;
 }
