@@ -13,7 +13,7 @@ Postgres), **Tailwind CSS**, and deployed to **Vercel**. Runs on the free tier.
 | Route        | Who      | What                                                            |
 | ------------ | -------- | -------------------------------------------------------------- |
 | `/`          | Guests   | Upload photos/videos (multi-file, progress bars) + guestbook   |
-| `/gallery`   | Everyone | Grid of all media, lightbox, **Download all** (ZIP)            |
+| `/gallery`   | Everyone | Grid of all media (filter, sort, group by guest), lightbox, **Download all** (ZIP with a folder per guest) |
 | `/slideshow` | Everyone | Full-screen auto-advancing slideshow, refreshes every 20s     |
 | `/guestbook` | Everyone | All guest messages with names & timestamps                     |
 
