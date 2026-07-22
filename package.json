@@ -1,8 +1,8 @@
 {
-  "name": "wedding-photos",
+  "name": "tender-studio",
   "version": "1.0.0",
   "private": true,
-  "description": "Sarah & Lairkin's Wedding — guest photo & video sharing",
+  "description": "Tender Studio — reusable content library and tender builder for Stacked",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -10,8 +10,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.45.4",
-    "jszip": "^3.10.1",
+    "@anthropic-ai/sdk": "^0.68.0",
+    "docx": "^9.5.1",
     "next": "^14.2.35",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"

@@ -1,63 +1,170 @@
-import GuestExperience from "@/components/GuestExperience";
-import { COUPLE_NAME } from "@/lib/config";
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useLibrary, useTenders } from "@/lib/storage";
+import { BackupControls } from "@/components/BackupControls";
+import type { TenderStatus } from "@/lib/types";
 
-export default function HomePage() {
+const STATUS_LABEL: Record<TenderStatus, string> = {
+  draft: "Draft",
+  "in-progress": "In progress",
+  submitted: "Submitted",
+  won: "Won",
+  lost: "Lost",
+};
+
+const STATUS_STYLE: Record<TenderStatus, string> = {
+  draft: "bg-paper text-mist",
+  "in-progress": "bg-accent-soft text-accent-dark",
+  submitted: "bg-ink text-white",
+  won: "bg-moss/15 text-moss",
+  lost: "bg-line text-mist",
+};
+
+export default function Dashboard() {
+  const { blocks } = useLibrary();
+  const { tenders, createTender } = useTenders();
+  const router = useRouter();
+
+  const topBlocks = [...blocks]
+    .filter((b) => b.timesUsed > 0)
+    .sort((a, b) => b.timesUsed - a.timesUsed)
+    .slice(0, 5);
+
+  const recentTenders = [...tenders]
+    .sort((a, b) => b.updatedAt - a.updatedAt)
+    .slice(0, 6);
+
+  function startTender() {
+    const id = createTender();
+    router.push(`/tenders/${id}`);
+  }
+
   return (
-    <main className="min-h-screen bg-cream px-5 py-10">
-      <div className="mx-auto w-full max-w-xl">
-        <header className="mb-8 text-center">
-          <p className="font-body text-sm uppercase tracking-[0.3em] text-blush">
-            Welcome to the wedding of
-          </p>
-          <h1 className="mt-3 py-2 font-script text-6xl leading-[1.35] text-sage-dark sm:text-7xl">
-            {COUPLE_NAME}
-          </h1>
-          <div className="mx-auto mt-4 flex items-center justify-center gap-3 text-sage/70">
-            <span className="h-px w-12 bg-sage/40" />
-            <span className="text-xl">❀</span>
-            <span className="h-px w-12 bg-sage/40" />
-          </div>
-          <p className="mt-5 text-lg text-stone-600">
-            Share the moments you capture today. Upload your photos and videos
-            below. Thank you for celebrating with us. ♥
-          </p>
-        </header>
+    <div className="space-y-8">
+      <section className="animate-fadeIn">
+        <p className="text-sm font-medium text-accent">Welcome back</p>
+        <h1 className="mt-1 font-display text-3xl font-semibold tracking-tight md:text-4xl">
+          Write better tenders, faster.
+        </h1>
+        <p className="mt-2 max-w-2xl text-mist">
+          Keep the best parts of every bid in one library, drop them into new
+          tenders, and let AI help you polish and tailor each response.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <button className="btn-accent" onClick={startTender}>
+            + New tender
+          </button>
+          <Link href="/library" className="btn-ghost">
+            Browse content library
+          </Link>
+        </div>
+      </section>
 
-        <section className="rounded-3xl bg-white/40 p-6 shadow-sm ring-1 ring-sage/10 sm:p-8">
-          <GuestExperience />
-        </section>
+      <section className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        <Stat label="Library blocks" value={blocks.length} />
+        <Stat label="Tenders" value={tenders.length} />
+        <Stat
+          label="Won"
+          value={tenders.filter((t) => t.status === "won").length}
+        />
+        <Stat
+          label="In progress"
+          value={
+            tenders.filter(
+              (t) => t.status === "in-progress" || t.status === "draft"
+            ).length
+          }
+        />
+      </section>
 
-        <section className="mt-8 text-center">
-          <p className="mb-4 text-lg text-sage-dark">
-            Already shared? Take a look 💕
-          </p>
-          <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-            <Link
-              href="/gallery"
-              className="rounded-full bg-sage px-7 py-4 text-lg text-cream shadow-sm transition-colors hover:bg-sage-dark"
-            >
-              🖼️ View gallery
-            </Link>
-            <Link
-              href="/slideshow"
-              className="rounded-full bg-blush px-7 py-4 text-lg text-cream shadow-sm transition-colors hover:bg-blush-dark"
-            >
-              📽️ Slideshow
-            </Link>
-            <Link
-              href="/guestbook"
-              className="rounded-full border-2 border-sage px-7 py-4 text-lg text-sage-dark transition-colors hover:bg-sage/10"
-            >
-              💌 Guestbook
+      <div className="grid gap-6 lg:grid-cols-3">
+        <section className="lg:col-span-2">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="font-display text-xl font-semibold">Recent tenders</h2>
+            <Link href="/tenders" className="text-sm font-medium text-accent hover:underline">
+              View all
             </Link>
           </div>
+          {recentTenders.length === 0 ? (
+            <div className="card p-8 text-center text-mist">
+              No tenders yet.{" "}
+              <button className="font-medium text-accent hover:underline" onClick={startTender}>
+                Start your first one →
+              </button>
+            </div>
+          ) : (
+            <ul className="space-y-2">
+              {recentTenders.map((t) => (
+                <li key={t.id}>
+                  <Link
+                    href={`/tenders/${t.id}`}
+                    className="card flex items-center justify-between gap-4 p-4 transition hover:shadow-lift"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate font-medium text-ink">{t.title}</p>
+                      <p className="truncate text-sm text-mist">
+                        {t.client || "No client set"}
+                        {t.dueDate ? ` · Due ${t.dueDate}` : ""}
+                        {` · ${t.sections.length} section${
+                          t.sections.length === 1 ? "" : "s"
+                        }`}
+                      </p>
+                    </div>
+                    <span
+                      className={`chip shrink-0 border-transparent ${STATUS_STYLE[t.status]}`}
+                    >
+                      {STATUS_LABEL[t.status]}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
 
-        <footer className="mt-10 text-center text-sm text-stone-400">
-          Made with love for {COUPLE_NAME}
-        </footer>
+        <section className="space-y-6">
+          <div>
+            <h2 className="mb-3 font-display text-xl font-semibold">
+              Most reused
+            </h2>
+            {topBlocks.length === 0 ? (
+              <div className="card p-5 text-sm text-mist">
+                Once you start pulling library blocks into tenders, your
+                greatest hits show up here.
+              </div>
+            ) : (
+              <ul className="card divide-y divide-line">
+                {topBlocks.map((b) => (
+                  <li key={b.id} className="flex items-center justify-between gap-3 p-3">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium text-ink">
+                        {b.title}
+                      </p>
+                      <p className="truncate text-xs text-mist">{b.category}</p>
+                    </div>
+                    <span className="chip shrink-0">×{b.timesUsed}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          <BackupControls />
+        </section>
       </div>
-    </main>
+    </div>
+  );
+}
+
+function Stat({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="card p-4">
+      <p className="text-3xl font-semibold text-ink">{value}</p>
+      <p className="mt-1 text-xs font-medium uppercase tracking-wide text-mist">
+        {label}
+      </p>
+    </div>
   );
 }

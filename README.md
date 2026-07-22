@@ -1,113 +1,85 @@
-# Sarah & Lairkin's Wedding 💍
+# Tender Studio
 
-A self-hosted, Wedibox-style wedding photo & video sharing app. Guests scan a
-QR code, land on a mobile-friendly page, and upload photos and videos with **no
-login and no app install**. The couple gets a private gallery, a live slideshow
-to project at the reception, and a guestbook.
+A private workspace for **writing tenders faster and better**. Keep the best
+parts of every bid in a reusable **content library**, assemble new tenders by
+dropping those blocks in, let **AI help polish and tailor** each response, and
+export the finished bid to **Word**.
 
-Built with **Next.js (App Router, TypeScript)**, **Supabase** (storage +
-Postgres), **Tailwind CSS**, and deployed to **Vercel**. Runs on the free tier.
+Built for repeat tender writing at **Stacked**.
 
-## Pages
+Built with **Next.js (App Router, TypeScript)** and **Tailwind CSS**. Your data
+is stored **in your browser** — no accounts, no database, nothing to set up to
+start using it.
 
-| Route        | Who      | What                                                            |
-| ------------ | -------- | -------------------------------------------------------------- |
-| `/`          | Guests   | Upload photos/videos (multi-file, progress bars) + guestbook   |
-| `/gallery`   | Everyone | Grid of all media, lightbox, **Download all** (ZIP)            |
-| `/slideshow` | Everyone | Full-screen auto-advancing slideshow, refreshes every 20s     |
-| `/guestbook` | Everyone | All guest messages with names & timestamps                     |
+## What it does
 
-All pages are open to anyone with the link. Guests upload on `/`; the gallery,
-slideshow and guestbook are viewable by all (no password).
+| Area                | What you get                                                                 |
+| ------------------- | ---------------------------------------------------------------------------- |
+| **Content Library** | Save reusable "blocks" (company overview, H&S, quality, case studies, …). Search by title, text, tag or category. Refine any block with AI. |
+| **Tender builder**  | Create a tender, add sections from your library or blank, reorder, edit. See most-reused blocks so your best material rises to the top. |
+| **AI writing help** | Per section/block: **Improve**, **More formal**, **Shorten**, **Expand**, **Tailor to client**. Plus **AI draft** — answer a tender question using selected library blocks as source material. |
+| **Export**          | Download the assembled tender as a formatted **.docx** Word file, or copy all the text to paste into a portal. |
+| **Backup**          | Export/import your whole library + tenders as a JSON file to back up or move to another computer. |
 
----
-
-## 1. Set up Supabase
-
-1. Create a project at [supabase.com](https://supabase.com) (free).
-2. **Storage → Create bucket** → name it `uploads`, set it **Public**.
-3. **SQL Editor → New query** → paste the contents of
-   [`supabase/schema.sql`](./supabase/schema.sql) and **Run**. This creates the
-   `uploads` and `messages` tables and the Row Level Security policies
-   (guests can only *insert*, never read or delete others' data).
-4. **Project Settings → API** — copy these three values for the next step:
-   - **Project URL**
-   - **anon public** key
-   - **service_role** key (secret — keep it server-side only)
-
-## 2. Configure environment variables
-
-Copy the example file and fill it in:
-
-```bash
-cp .env.local.example .env.local
-```
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-public-key
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-# optional
-NEXT_PUBLIC_COUPLE_NAME=Sarah & Lairkin
-NEXT_PUBLIC_MAX_UPLOAD_MB=
-```
-
-| Variable                        | Exposed to browser? | Purpose                                  |
-| ------------------------------- | ------------------- | ---------------------------------------- |
-| `NEXT_PUBLIC_SUPABASE_URL`      | Yes                 | Guest uploads                            |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes                 | Guest uploads (insert-only via RLS)      |
-| `SUPABASE_SERVICE_ROLE_KEY`     | **No (server only)**| Gallery/slideshow list media/messages    |
-| `NEXT_PUBLIC_COUPLE_NAME`       | Yes                 | Heading text (optional)                  |
-| `NEXT_PUBLIC_MAX_UPLOAD_MB`     | Yes                 | Optional per-file size cap (optional)    |
-
-## 3. Run locally
+## Run locally
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open <http://localhost:3000>. To test from your **phone** on the same Wi-Fi,
-run `npm run dev -- -H 0.0.0.0` and visit `http://YOUR-COMPUTER-IP:3000`.
+Open <http://localhost:3000>. The library seeds with a few example blocks on
+first run — edit them to match Stacked's real content.
 
-Test checklist: upload a photo and a video, confirm they appear in `/gallery`,
-leave a guestbook message, open `/slideshow`.
+### Turn on AI (optional)
 
-## 4. Deploy to Vercel
+The app is fully usable without AI. To switch on the ✨ writing helpers:
 
-1. Push this repo to GitHub.
-2. At [vercel.com](https://vercel.com) → **Add New → Project** → import the repo.
-3. Under **Environment Variables**, add the same variables from your
-   `.env.local` (Vercel does **not** read that file). Set them for Production
-   (and Preview if you like).
-4. **Deploy.** You get a public URL like `your-wedding.vercel.app`.
+```bash
+cp .env.local.example .env.local
+```
 
-> After changing env vars in Vercel, redeploy for them to take effect.
+Paste your Anthropic API key into `.env.local`:
 
-## 5. QR code & sign
+```env
+ANTHROPIC_API_KEY=sk-ant-...
+```
 
-Generate a QR code pointing at your Vercel URL (e.g.
-[qrcode-monkey.com](https://www.qrcode-monkey.com) — use a *dynamic* QR so you
-can re-point it later without reprinting). Print it on your table sign.
+Restart the dev server. Get a key at
+[console.anthropic.com](https://console.anthropic.com). AI requests use Claude
+(`claude-opus-4-8`) and run server-side, so your key never reaches the browser.
 
----
+## Where your data lives
 
-## Security model
+Everything is saved in this browser's `localStorage`. That means:
 
-- **Guests** use only the **anon key** in the browser. RLS allows that key to
-  *insert* into `uploads`/`messages` and to *upload* to the storage bucket —
-  nothing else. They cannot read or delete other guests' data via the API.
-- **Media bytes** are served from the **public storage bucket** via public
-  URLs (no key needed).
-- **The gallery, slideshow and guestbook are open to anyone with the link.**
-  They list data through server-side API routes that use the **service_role
-  key**, which never reaches the browser. (To make them private again, add an
-  auth gate — there's no password by default.)
+- **Nothing to set up** — it works the moment you open it.
+- **It's per-browser** — clearing browser data, or switching computer, loses it
+  unless you've exported a backup. Use **Dashboard → Backup & restore → Export
+  backup** regularly. Cloud sync can be added later if you want it.
 
-## Free-tier notes
+## Deploy
 
-Supabase free tier ≈ **1 GB storage + 5 GB bandwidth**. A wedding with lots of
-HD video can exceed this. Options: set `NEXT_PUBLIC_MAX_UPLOAD_MB` (e.g. `25`)
-to cap file sizes, restrict to photos, download + clear partway through, or
-upgrade Supabase for the month. After the wedding, open `/gallery → Download
-all` and back up the ZIP in two places.
+Deploy to any Next.js host (e.g. Vercel: **Add New → Project → import the
+repo**). Add `ANTHROPIC_API_KEY` as an environment variable if you want AI
+enabled in the deployed app. Since data is browser-local, each person's library
+lives on their own device until backups are shared or cloud sync is added.
+
+## Project structure
+
+```
+src/
+  app/
+    page.tsx              Dashboard (stats, recent tenders, backup)
+    library/page.tsx      Content library
+    tenders/page.tsx      Tender list
+    tenders/[id]/page.tsx Tender editor
+    api/ai/route.ts       Server-side Claude endpoint
+  components/             Nav, editors, AI assist, library picker, backup
+  lib/
+    types.ts              Data model
+    storage.ts            localStorage data layer + React hooks
+    seed.ts               Starter categories & example blocks
+    ai.ts                 Client wrapper for the AI endpoint
+    docxExport.ts         Word (.docx) export
+```
