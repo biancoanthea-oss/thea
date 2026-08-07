@@ -22,10 +22,24 @@ create table if not exists public.messages (
   created_at  timestamptz not null default now()
 );
 
+-- Time-capsule letters: written now, emailed back on deliver_at (e.g. the
+-- first anniversary). sent_at is stamped by the cron route after delivery.
+create table if not exists public.letters (
+  id          uuid primary key default gen_random_uuid(),
+  sender_name text,
+  email       text not null,
+  message     text not null,
+  deliver_at  timestamptz not null,
+  sent_at     timestamptz,
+  created_at  timestamptz not null default now()
+);
+
 create index if not exists uploads_created_at_idx
   on public.uploads (created_at desc);
 create index if not exists messages_created_at_idx
   on public.messages (created_at desc);
+create index if not exists letters_due_idx
+  on public.letters (deliver_at) where sent_at is null;
 
 -- ---------------------------------------------------------------------------
 -- Row Level Security
@@ -35,6 +49,7 @@ create index if not exists messages_created_at_idx
 -- ---------------------------------------------------------------------------
 alter table public.uploads  enable row level security;
 alter table public.messages enable row level security;
+alter table public.letters  enable row level security;
 
 -- uploads: insert-only for anonymous (and logged-in) guests
 drop policy if exists "guests can insert uploads" on public.uploads;
@@ -48,6 +63,15 @@ create policy "guests can insert uploads"
 drop policy if exists "guests can insert messages" on public.messages;
 create policy "guests can insert messages"
   on public.messages
+  for insert
+  to anon, authenticated
+  with check (true);
+
+-- letters: insert-only for anonymous (and logged-in) guests. Nobody can read
+-- letters through the API — they stay sealed until the cron emails them.
+drop policy if exists "guests can insert letters" on public.letters;
+create policy "guests can insert letters"
+  on public.letters
   for insert
   to anon, authenticated
   with check (true);

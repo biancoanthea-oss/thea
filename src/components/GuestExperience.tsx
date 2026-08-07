@@ -3,6 +3,7 @@
 import { useState } from "react";
 import UploadBox from "./UploadBox";
 import GuestbookForm from "./GuestbookForm";
+import TimeCapsuleForm from "./TimeCapsuleForm";
 
 // Holds the (optional) guest name so it can be attached to both their uploads
 // and their guestbook message.
@@ -28,6 +29,10 @@ export default function GuestExperience() {
 
       <div className="border-t border-sage/20 pt-8">
         <GuestbookForm name={name} />
+      </div>
+
+      <div className="border-t border-sage/20 pt-8">
+        <TimeCapsuleForm name={name} />
       </div>
     </div>
   );

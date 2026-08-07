@@ -12,7 +12,7 @@ Postgres), **Tailwind CSS**, and deployed to **Vercel**. Runs on the free tier.
 
 | Route        | Who      | What                                                            |
 | ------------ | -------- | -------------------------------------------------------------- |
-| `/`          | Guests   | Upload photos/videos (multi-file, progress bars) + guestbook   |
+| `/`          | Guests   | Upload photos/videos, guestbook + time-capsule letters         |
 | `/gallery`   | Everyone | Grid of all media, lightbox, **Download all** (ZIP)            |
 | `/slideshow` | Everyone | Full-screen auto-advancing slideshow, refreshes every 20s     |
 | `/guestbook` | Everyone | All guest messages with names & timestamps                     |
@@ -59,6 +59,9 @@ NEXT_PUBLIC_MAX_UPLOAD_MB=
 | `SUPABASE_SERVICE_ROLE_KEY`     | **No (server only)**| Gallery/slideshow list media/messages    |
 | `NEXT_PUBLIC_COUPLE_NAME`       | Yes                 | Heading text (optional)                  |
 | `NEXT_PUBLIC_MAX_UPLOAD_MB`     | Yes                 | Optional per-file size cap (optional)    |
+| `RESEND_API_KEY`                | **No (server only)**| Time-capsule letter emails (optional)    |
+| `LETTER_FROM_EMAIL`             | **No (server only)**| "From" address for letters (optional)    |
+| `CRON_SECRET`                   | **No (server only)**| Protects the letter-delivery cron (opt.) |
 
 ## 3. Run locally
 
@@ -91,6 +94,35 @@ Generate a QR code pointing at your Vercel URL (e.g.
 can re-point it later without reprinting). Print it on your table sign.
 
 ---
+
+## Time-capsule letters ✉️
+
+On the guest page (`/`), anyone can **write a letter today and have it emailed
+back to them later** — one year from today by default (they can pick another
+date). Letters are stored in the `letters` table and are *insert-only* under
+RLS, so nobody — not guests, not the couple — can read a letter through the
+API before it's delivered.
+
+Delivery works via a **daily Vercel cron** ([`vercel.json`](./vercel.json))
+that calls `/api/letters/deliver` at 09:00 UTC. The route finds letters whose
+date has arrived, emails each one via [Resend](https://resend.com), and marks
+it sent.
+
+To enable delivery:
+
+1. Re-run [`supabase/schema.sql`](./supabase/schema.sql) in the Supabase SQL
+   Editor (it's idempotent) to create the `letters` table.
+2. Create a free [Resend](https://resend.com) account, verify a sender domain
+   (or use their test address while trying it out), and grab an API key.
+3. Add `RESEND_API_KEY`, `LETTER_FROM_EMAIL` and `CRON_SECRET` to your Vercel
+   environment variables (see `.env.local.example`), then redeploy. Vercel
+   automatically sends `CRON_SECRET` as a bearer token with each cron call,
+   and the route rejects requests without it.
+
+Letters written before these variables are set are still saved — they'll be
+delivered by the first cron run after you configure them, if their date has
+passed. Note that Vercel's Hobby-tier crons trigger once per day within an
+hour of the scheduled time, which is plenty for date-based delivery.
 
 ## Security model
 
