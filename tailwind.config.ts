@@ -8,24 +8,43 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        sage: "#6f7a4f",
-        "sage-dark": "#5a6440",
-        blush: "#cf857d",
-        "blush-dark": "#b96e66",
-        cream: "#f6efe2",
+        night: "#0a0a1f",
+        "night-2": "#12122e",
+        cosmos: "#1a1a3e",
+        stardust: "#e8e6ff",
+        "stardust-dim": "#a9a6d4",
+        aura: "#b39dff",
+        "aura-dark": "#7c6bd6",
+        gold: "#f5d67b",
+        blush: "#f5a0a0",
       },
       fontFamily: {
-        script: ["var(--font-script)", "cursive"],
-        body: ["var(--font-body)", "serif"],
+        display: ["var(--font-display)", "serif"],
+        body: ["var(--font-body)", "system-ui", "sans-serif"],
       },
       keyframes: {
         fadeIn: {
-          "0%": { opacity: "0" },
-          "100%": { opacity: "1" },
+          "0%": { opacity: "0", transform: "translateY(8px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        twinkle: {
+          "0%, 100%": { opacity: "0.2" },
+          "50%": { opacity: "1" },
+        },
+        pulseGlow: {
+          "0%, 100%": { opacity: "0.5" },
+          "50%": { opacity: "1" },
+        },
+        float: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-6px)" },
         },
       },
       animation: {
-        fadeIn: "fadeIn 1.2s ease-in-out",
+        fadeIn: "fadeIn 0.8s ease-out both",
+        twinkle: "twinkle 4s ease-in-out infinite",
+        pulseGlow: "pulseGlow 3s ease-in-out infinite",
+        float: "float 6s ease-in-out infinite",
       },
     },
   },

@@ -1,31 +1,30 @@
 import type { Metadata, Viewport } from "next";
-import { Great_Vibes, Playfair_Display } from "next/font/google";
-import { COUPLE_NAME } from "@/lib/config";
+import { Cormorant_Garamond, Inter } from "next/font/google";
 import "./globals.css";
 
-const greatVibes = Great_Vibes({
-  weight: "400",
+const display = Cormorant_Garamond({
+  weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
-  variable: "--font-script",
+  variable: "--font-display",
   display: "swap",
 });
 
-const playfair = Playfair_Display({
-  weight: ["400", "500", "600", "700"],
+const body = Inter({
   subsets: ["latin"],
   variable: "--font-body",
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: `${COUPLE_NAME}'s Wedding`,
-  description: `Share your photos & videos from ${COUPLE_NAME}'s wedding`,
+  title: "Thea — Astrology Focus",
+  description:
+    "An astrology-guided focus companion. Read your daily focus forecast, then work in the flow with a celestial focus timer.",
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#6f7a4f",
+  themeColor: "#0a0a1f",
 };
 
 export default function RootLayout({
@@ -34,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${greatVibes.variable} ${playfair.variable}`}>
+    <html lang="en" className={`${display.variable} ${body.variable}`}>
       <body className="font-body antialiased">{children}</body>
     </html>
   );

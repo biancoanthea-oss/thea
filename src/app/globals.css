@@ -3,19 +3,35 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 }
 
 body {
-  background-color: #f6efe2;
-  color: #3d3a33;
+  background-color: #0a0a1f;
+  color: #e8e6ff;
+  background-image:
+    radial-gradient(1200px 800px at 50% -20%, rgba(124, 107, 214, 0.28), transparent 60%),
+    radial-gradient(900px 600px at 100% 0%, rgba(245, 214, 123, 0.08), transparent 55%),
+    radial-gradient(1000px 700px at 0% 100%, rgba(179, 157, 255, 0.12), transparent 55%);
+  background-attachment: fixed;
+  min-height: 100vh;
 }
 
-/* Hide scrollbar on the slideshow for a clean projected look */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
+/* Frosted "card" surface used across the app */
+.glass {
+  background: rgba(26, 26, 62, 0.55);
+  border: 1px solid rgba(179, 157, 255, 0.16);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+
+/* Reduced motion: calm everything down */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }
