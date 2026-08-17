@@ -4,6 +4,22 @@ A reusable workspace for writing tender and bid responses. Drop a new
 opportunity in `active/`, pull ready-made text from `library/`, and use the
 `templates/` as the starting shape for each document.
 
+> ## ⚠️ This repository is PUBLIC
+>
+> Real tender documents contain staff names and contact details, client referee
+> names and emails, tax reference numbers, insurance details, contract values
+> and pricing. **None of that can be committed here** — anything pushed to a
+> public repo is visible immediately and may be cached or indexed even after
+> deletion.
+>
+> `.gitignore` in this folder blocks `.docx`, `.xlsx`, `.pdf` and the bid
+> working folders for exactly this reason. Keep the real documents in
+> OneDrive/SharePoint and share them with me per session.
+>
+> To hold real content here instead, the repository needs to be made private
+> (Settings → General → Danger Zone → Change visibility), or these files moved
+> to a private repo of their own.
+
 ## How to use it
 
 1. **New opportunity arrives.** Copy the template folder:

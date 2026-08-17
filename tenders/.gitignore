@@ -1,0 +1,36 @@
+# Source and submitted tender documents are NOT committed.
+#
+# This repository is currently PUBLIC on GitHub. Real tender documents contain
+# staff names and contact details, client referee names and emails, tax
+# reference numbers, insurance details, contract values and pricing — none of
+# which should be published. Anything pushed here is public immediately and may
+# be cached or indexed even if deleted afterwards.
+#
+# Keep the real documents in OneDrive/SharePoint. This folder holds only the
+# templates, process and reusable writing guidance.
+
+# Office and PDF documents anywhere under tenders/
+*.docx
+*.doc
+*.dotx
+*.xlsx
+*.xls
+*.xlsm
+*.pptx
+*.ppt
+*.pdf
+*.zip
+*.msg
+*.eml
+
+# Bid working folders
+active/*/
+archive/*/
+won/*/
+
+# Allow the templates and the folder READMEs back in
+!templates/
+!templates/**
+!active/README.md
+!archive/README.md
+!won/README.md
