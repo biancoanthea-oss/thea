@@ -29,3 +29,11 @@ next-env.d.ts
 
 # vercel
 .vercel
+
+# marketing credentials & data exports
+.env.marketing
+marketing/reports/data/*
+!marketing/reports/data/.gitkeep
+*-credentials.json
+*service-account*.json
+client_secret*.json

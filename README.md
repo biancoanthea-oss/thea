@@ -92,6 +92,19 @@ can re-point it later without reprinting). Print it on your table sign.
 
 ---
 
+## Marketing & Google Ads
+
+Growth work — Google Ads (Search + Performance Max), SEO, and ad copy — lives in
+[`marketing/`](./marketing). Start with
+[`marketing/README.md`](./marketing/README.md), then fill in
+[`marketing/brief.md`](./marketing/brief.md).
+
+```bash
+npm run ads:lint    # check ad copy against Google Ads character limits
+```
+
+---
+
 ## Security model
 
 - **Guests** use only the **anon key** in the browser. RLS allows that key to
