@@ -16,9 +16,15 @@ Postgres), **Tailwind CSS**, and deployed to **Vercel**. Runs on the free tier.
 | `/gallery`   | Everyone | Grid of all media, lightbox, **Download all** (ZIP)            |
 | `/slideshow` | Everyone | Full-screen auto-advancing slideshow, refreshes every 20s     |
 | `/guestbook` | Everyone | All guest messages with names & timestamps                     |
+| `/blog`      | Everyone | Articles index                                                  |
+| `/blog/[slug]` | Everyone | A single article (statically pre-rendered)                    |
 
 All pages are open to anyone with the link. Guests upload on `/`; the gallery,
 slideshow and guestbook are viewable by all (no password).
+
+Blog posts live as typed data in [`src/lib/blog.ts`](./src/lib/blog.ts) — add an
+entry to the `posts` array and the index page, the article route and its static
+params pick it up automatically. Post text supports `**bold**` inline.
 
 ---
 
